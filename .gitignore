@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+.venv/
+
+# Java / Maven
+target/
+*.class
+
+# C build artifacts
+matrixmul_benchmark
+correctness_test
+
+# Release staging (zips are attached to GitHub releases, never committed)
+dist/
+
+# Editor / OS noise
+.DS_Store
+Thumbs.db
+*.swp
+*~
