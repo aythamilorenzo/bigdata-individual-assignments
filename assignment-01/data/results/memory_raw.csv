@@ -1,0 +1,62 @@
+size,language,metric,tool,value_bytes,theoretical_bytes
+10,python,peak_rss,/proc/self/status VmHWM,16920576,2400
+10,python,theoretical_array_storage,analytical,2400,2400
+10,java,peak_rss,/proc/self/status VmHWM,46161920,2400
+10,java,peak_heap,MemoryPoolMXBean,3067904,2400
+10,java,theoretical_array_storage,analytical,2400,2400
+10,c,peak_rss,/proc/self/status VmHWM,2068480,2400
+10,c,theoretical_array_storage,analytical,2400,2400
+10,go,peak_rss,/proc/self/status VmHWM,2568192,2400
+10,go,theoretical_array_storage,analytical,2400,2400
+25,python,peak_rss,/proc/self/status VmHWM,17031168,15000
+25,python,theoretical_array_storage,analytical,15000,15000
+25,java,peak_rss,/proc/self/status VmHWM,46321664,15000
+25,java,peak_heap,MemoryPoolMXBean,3067904,15000
+25,java,theoretical_array_storage,analytical,15000,15000
+25,c,peak_rss,/proc/self/status VmHWM,2084864,15000
+25,c,theoretical_array_storage,analytical,15000,15000
+25,go,peak_rss,/proc/self/status VmHWM,2670592,15000
+25,go,theoretical_array_storage,analytical,15000,15000
+50,python,peak_rss,/proc/self/status VmHWM,17215488,60000
+50,python,theoretical_array_storage,analytical,60000,60000
+50,java,peak_rss,/proc/self/status VmHWM,46432256,60000
+50,java,peak_heap,MemoryPoolMXBean,3067904,60000
+50,java,theoretical_array_storage,analytical,60000,60000
+50,c,peak_rss,/proc/self/status VmHWM,2125824,60000
+50,c,theoretical_array_storage,analytical,60000,60000
+50,go,peak_rss,/proc/self/status VmHWM,2777088,60000
+50,go,theoretical_array_storage,analytical,60000,60000
+100,python,peak_rss,/proc/self/status VmHWM,17965056,240000
+100,python,theoretical_array_storage,analytical,240000,240000
+100,java,peak_rss,/proc/self/status VmHWM,46923776,240000
+100,java,peak_heap,MemoryPoolMXBean,3067904,240000
+100,java,theoretical_array_storage,analytical,240000,240000
+100,c,peak_rss,/proc/self/status VmHWM,2310144,240000
+100,c,theoretical_array_storage,analytical,240000,240000
+100,go,peak_rss,/proc/self/status VmHWM,3006464,240000
+100,go,theoretical_array_storage,analytical,240000,240000
+200,python,peak_rss,/proc/self/status VmHWM,21803008,960000
+200,python,theoretical_array_storage,analytical,960000,960000
+200,java,peak_rss,/proc/self/status VmHWM,48427008,960000
+200,java,peak_heap,MemoryPoolMXBean,3067904,960000
+200,java,theoretical_array_storage,analytical,960000,960000
+200,c,peak_rss,/proc/self/status VmHWM,3039232,960000
+200,c,theoretical_array_storage,analytical,960000,960000
+200,go,peak_rss,/proc/self/status VmHWM,4308992,960000
+200,go,theoretical_array_storage,analytical,960000,960000
+500,python,peak_rss,/proc/self/status VmHWM,48693248,6000000
+500,python,theoretical_array_storage,analytical,6000000,6000000
+500,java,peak_rss,/proc/self/status VmHWM,59023360,6000000
+500,java,peak_heap,MemoryPoolMXBean,12505088,6000000
+500,java,theoretical_array_storage,analytical,6000000,6000000
+500,c,peak_rss,/proc/self/status VmHWM,8069120,6000000
+500,c,theoretical_array_storage,analytical,6000000,6000000
+500,go,peak_rss,/proc/self/status VmHWM,13332480,6000000
+500,go,theoretical_array_storage,analytical,6000000,6000000
+1000,java,peak_rss,/proc/self/status VmHWM,117370880,24000000
+1000,java,peak_heap,MemoryPoolMXBean,26585600,24000000
+1000,java,theoretical_array_storage,analytical,24000000,24000000
+1000,c,peak_rss,/proc/self/status VmHWM,26075136,24000000
+1000,c,theoretical_array_storage,analytical,24000000,24000000
+1000,go,peak_rss,/proc/self/status VmHWM,35516416,24000000
+1000,go,theoretical_array_storage,analytical,24000000,24000000

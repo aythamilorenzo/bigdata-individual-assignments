@@ -1,0 +1,92 @@
+[2026-10-10T15:47:48Z] campaign start: sizes=[10, 25, 50, 100, 200, 500, 1000] languages=['python', 'java', 'c', 'go'] warmup=3 repetitions=7 append=False
+[2026-10-10T15:47:55Z] $ mvn -q -DskipTests package
+
+[2026-10-10T15:47:56Z] $ bash c/build.sh
+C build OK (no warnings): matrixmul_benchmark, correctness_test
+[2026-10-10T15:47:56Z] $ go build -o /tmp/matrixmul_build_kju0xapr/go-benchmark ./cmd/benchmark
+
+[2026-10-10T15:47:56Z] $ /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/.venv/bin/python /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/python/run_benchmark.py --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 10 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    python n=10 batch=23 checksum=245.20126076142023
+[2026-10-10T15:47:56Z]   ok (exit 0): python n=10 batch=23 checksum=245.20126076142023
+[2026-10-10T15:47:56Z] $ java -jar /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/target/matrixmul-benchmark.jar --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 10 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    java n=10 batch=6 checksum=245.20126076142023
+[2026-10-10T15:47:57Z]   ok (exit 0): java n=10 batch=6 checksum=245.20126076142023
+[2026-10-10T15:47:57Z] $ /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/c/matrixmul_benchmark --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 10 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    c n=10 batch=1539 checksum=245.20126076142023
+[2026-10-10T15:47:57Z]   ok (exit 0): c n=10 batch=1539 checksum=245.20126076142023
+[2026-10-10T15:47:57Z] $ /tmp/matrixmul_build_kju0xapr/go-benchmark --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 10 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    go n=10 batch=102 checksum=245.20126076142023
+[2026-10-10T15:47:57Z]   ok (exit 0): go n=10 batch=102 checksum=245.20126076142023
+[2026-10-10T15:47:57Z] $ /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/.venv/bin/python /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/python/run_benchmark.py --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 25 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    python n=25 batch=2 checksum=3892.2914340239568
+[2026-10-10T15:47:57Z]   ok (exit 0): python n=25 batch=2 checksum=3892.2914340239568
+[2026-10-10T15:47:57Z] $ java -jar /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/target/matrixmul-benchmark.jar --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 25 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    java n=25 batch=2 checksum=3892.2914340239568
+[2026-10-10T15:47:57Z]   ok (exit 0): java n=25 batch=2 checksum=3892.2914340239568
+[2026-10-10T15:47:57Z] $ /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/c/matrixmul_benchmark --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 25 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    c n=25 batch=127 checksum=3892.2914340239568
+[2026-10-10T15:47:57Z]   ok (exit 0): c n=25 batch=127 checksum=3892.2914340239568
+[2026-10-10T15:47:57Z] $ /tmp/matrixmul_build_kju0xapr/go-benchmark --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 25 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    go n=25 batch=36 checksum=3892.2914340239568
+[2026-10-10T15:47:57Z]   ok (exit 0): go n=25 batch=36 checksum=3892.2914340239568
+[2026-10-10T15:47:57Z] $ /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/.venv/bin/python /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/python/run_benchmark.py --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 50 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    python n=50 batch=1 checksum=30216.410573874673
+[2026-10-10T15:47:58Z]   ok (exit 0): python n=50 batch=1 checksum=30216.410573874673
+[2026-10-10T15:47:58Z] $ java -jar /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/target/matrixmul-benchmark.jar --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 50 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    java n=50 batch=1 checksum=30216.410573874673
+[2026-10-10T15:47:58Z]   ok (exit 0): java n=50 batch=1 checksum=30216.410573874673
+[2026-10-10T15:47:58Z] $ /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/c/matrixmul_benchmark --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 50 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    c n=50 batch=9 checksum=30216.410573874673
+[2026-10-10T15:47:58Z]   ok (exit 0): c n=50 batch=9 checksum=30216.410573874673
+[2026-10-10T15:47:58Z] $ /tmp/matrixmul_build_kju0xapr/go-benchmark --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 50 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    go n=50 batch=6 checksum=30216.410573874673
+[2026-10-10T15:47:58Z]   ok (exit 0): go n=50 batch=6 checksum=30216.410573874673
+[2026-10-10T15:47:58Z] $ /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/.venv/bin/python /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/python/run_benchmark.py --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 100 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    python n=100 batch=1 checksum=250781.35282481197
+[2026-10-10T15:47:59Z]   ok (exit 0): python n=100 batch=1 checksum=250781.35282481197
+[2026-10-10T15:47:59Z] $ java -jar /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/target/matrixmul-benchmark.jar --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 100 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    java n=100 batch=1 checksum=250781.35282481197
+[2026-10-10T15:48:00Z]   ok (exit 0): java n=100 batch=1 checksum=250781.35282481197
+[2026-10-10T15:48:00Z] $ /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/c/matrixmul_benchmark --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 100 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    c n=100 batch=2 checksum=250781.35282481197
+[2026-10-10T15:48:00Z]   ok (exit 0): c n=100 batch=2 checksum=250781.35282481197
+[2026-10-10T15:48:00Z] $ /tmp/matrixmul_build_kju0xapr/go-benchmark --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 100 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    go n=100 batch=1 checksum=250781.35282481197
+[2026-10-10T15:48:00Z]   ok (exit 0): go n=100 batch=1 checksum=250781.35282481197
+[2026-10-10T15:48:00Z] $ /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/.venv/bin/python /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/python/run_benchmark.py --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 200 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    python n=200 batch=1 checksum=1999125.5906941774
+[2026-10-10T15:48:08Z]   ok (exit 0): python n=200 batch=1 checksum=1999125.5906941774
+[2026-10-10T15:48:08Z] $ java -jar /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/target/matrixmul-benchmark.jar --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 200 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    java n=200 batch=1 checksum=1999125.5906941774
+[2026-10-10T15:48:08Z]   ok (exit 0): java n=200 batch=1 checksum=1999125.5906941774
+[2026-10-10T15:48:08Z] $ /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/c/matrixmul_benchmark --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 200 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    c n=200 batch=1 checksum=1999125.5906941774
+[2026-10-10T15:48:08Z]   ok (exit 0): c n=200 batch=1 checksum=1999125.5906941774
+[2026-10-10T15:48:08Z] $ /tmp/matrixmul_build_kju0xapr/go-benchmark --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 200 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    go n=200 batch=1 checksum=1999125.5906941774
+[2026-10-10T15:48:09Z]   ok (exit 0): go n=200 batch=1 checksum=1999125.5906941774
+[2026-10-10T15:48:09Z] $ /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/.venv/bin/python /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/python/run_benchmark.py --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 500 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    python n=500 batch=1 checksum=31268362.790855724
+[2026-10-10T15:50:39Z]   ok (exit 0): python n=500 batch=1 checksum=31268362.790855724
+[2026-10-10T15:50:39Z] $ java -jar /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/target/matrixmul-benchmark.jar --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 500 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    java n=500 batch=1 checksum=31268362.790855724
+[2026-10-10T15:50:44Z]   ok (exit 0): java n=500 batch=1 checksum=31268362.790855724
+[2026-10-10T15:50:44Z] $ /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/c/matrixmul_benchmark --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 500 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    c n=500 batch=1 checksum=31268362.790855724
+[2026-10-10T15:50:46Z]   ok (exit 0): c n=500 batch=1 checksum=31268362.790855724
+[2026-10-10T15:50:46Z] $ /tmp/matrixmul_build_kju0xapr/go-benchmark --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 500 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    go n=500 batch=1 checksum=31268362.790855724
+[2026-10-10T15:50:51Z]   ok (exit 0): go n=500 batch=1 checksum=31268362.790855724
+[2026-10-10T15:50:51Z] $ /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/.venv/bin/python /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/python/run_benchmark.py --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 1000 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    budget exceeded at n=1000: single multiplication took 178.6 s
+[2026-10-10T15:53:50Z]   time budget exceeded (exit 3): recorded as a result
+[2026-10-10T15:53:50Z] $ java -jar /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/target/matrixmul-benchmark.jar --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 1000 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    java n=1000 batch=1 checksum=249835821.39973290
+[2026-10-10T15:57:03Z]   ok (exit 0): java n=1000 batch=1 checksum=249835821.39973290
+[2026-10-10T15:57:03Z] $ /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/c/matrixmul_benchmark --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 1000 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    c n=1000 batch=1 checksum=249835821.39973289
+[2026-10-10T15:58:06Z]   ok (exit 0): c n=1000 batch=1 checksum=249835821.39973289
+[2026-10-10T15:58:06Z] $ /tmp/matrixmul_build_kju0xapr/go-benchmark --inputs /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/inputs --size 1000 --time-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/time_raw.csv --memory-csv /mnt/c/Users/aytha/Desktop/IndividualAssigment1 - Aythami Lorenzo/data/results/memory_raw.csv --warmup 3 --repetitions 7
+    go n=1000 batch=1 checksum=249835821.39973289
+[2026-10-10T15:59:16Z]   ok (exit 0): go n=1000 batch=1 checksum=249835821.39973289
+[2026-10-10T15:59:16Z] campaign finished without failures
