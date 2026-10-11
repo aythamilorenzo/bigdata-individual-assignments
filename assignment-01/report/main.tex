@@ -1,16 +1,21 @@
 \documentclass[11pt,a4paper]{article}
 
-\usepackage[margin=2cm]{geometry}
+\usepackage[margin=2.5cm]{geometry}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{booktabs}
 \usepackage{graphicx}
-\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=blue,urlcolor=blue]{hyperref}
 
-\title{Benchmarking a Basic Triple-Loop Matrix Multiplication\\
-in Python, Java, C and Go}
-\author{Aythami Lorenzo}
-\date{October 2026 --- Individual Assignment 1, Big Data}
+\title{\textbf{Benchmarking a Basic Triple-Loop Matrix Multiplication\\
+in Python, Java, C and Go}\\
+\vspace{0.5cm}
+\Large Big Data --- Bachelor's Degree in Data Science and Engineering (ULPGC)}
+
+\author{\textbf{Aythami Lorenzo} \\[0.1cm]
+\small University of Las Palmas de Gran Canaria \\
+\small Code \& Data: \url{https://github.com/aythamilorenzo/bigdata-individual-assignments}}
+\date{October 2026}
 
 \begin{document}
 
@@ -35,6 +40,7 @@ matrices or prototyping, where its 50--90$\times$ slowdown remains affordable.
 \end{abstract}
 
 \tableofcontents
+\newpage
 
 \section{Introduction and objective}
 
@@ -335,7 +341,7 @@ Available: \url{https://learn.microsoft.com/windows/wsl/}
 
 \end{thebibliography}
 
-\section{Reproducibility materials}
+\section[Reproducibility materials]{Reproducibility materials\footnote{Generative AI tools were utilized solely to refine the stylistic quality, grammar, and technical phrasing of this report.}}
 
 All materials ship with this report: the Java (Maven), C, Go and Python
 sources; the JUnit, C, Go and Python correctness tests; the shared input
