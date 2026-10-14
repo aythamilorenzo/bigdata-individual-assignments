@@ -1,21 +1,34 @@
-\documentclass[11pt, a4paper]{article}
+\documentclass[11pt,a4paper]{article}
 
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{amsmath, amssymb}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
 \usepackage{booktabs}
 \usepackage{graphicx}
-\usepackage[margin=2cm]{geometry}
-\usepackage{siunitx}
-\usepackage{subcaption}
-\usepackage[hidelinks]{hyperref}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=blue,urlcolor=blue]{hyperref}
 
-\title{Optimised Dense Matrix Multiplication and Sparse CSR Multiplication:\\
-An Empirical Study of Optimisation and Structure Effects}
-\author{Aythami Lorenzo\\
-Degree in Data Science and Engineering (ULPGC)\\
-Big Data --- Individual Assignment 2}
-\date{November 2026}
+% thebibliography prints its own unnumbered "References" heading; the numbered
+% \section{References} already provides it, so the next starred heading is
+% swallowed once (star and title consumed together) and the sections after the
+% bibliography keep the normal \section.
+\makeatletter
+\newcommand{\swallownextsectionstar}{%
+  \let\originalsection\section
+  \renewcommand{\section}{\@ifnextchar*{\swallowsectionstar}{\originalsection}}}
+\def\swallowsectionstar*#1{\let\section\originalsection}
+\makeatother
+
+\title{\textbf{Optimised Dense Matrix Multiplication and Sparse CSR
+Multiplication:\\ An Empirical Study of Optimisation and Structure
+Effects}\thanks{Generative AI tools were utilized solely to refine the
+stylistic quality, grammar, and technical phrasing of this report.}\\
+\vspace{0.5cm}
+\Large Big Data --- Bachelor's Degree in Data Science and Engineering (ULPGC)}
+
+\author{\textbf{Aythami Lorenzo} \\[0.1cm]
+\small University of Las Palmas de Gran Canaria \\
+\small Code \& Data: \url{https://github.com/aythamilorenzo/bigdata-individual-assignments}}
+\date{October 2026}
 
 \begin{document}
 
@@ -41,6 +54,7 @@ outweighs indexing, conversion and output-densification costs.
 \end{abstract}
 
 \tableofcontents
+\newpage
 
 \section{Introduction and objective}
 \label{sec:introduction}
@@ -63,7 +77,7 @@ dense multiplication as $n$ grows?
 representation outperform the dense method, and where do indexing, conversion
 and output-densification costs erode it?
 
-\section{Background and references}
+\section{Background}
 \label{sec:background}
 
 The basic dense algorithm multiplies two $n \times n$ matrices stored in
@@ -80,13 +94,17 @@ array~\cite{saad2003}. One $n \times n$ matrix then costs
 $12\,\mathrm{nnz} + 4(n+1)$ bytes with 8-byte float64 values and 4-byte
 integer indices and pointers, versus $8n^2$ bytes dense ($24n^2$ bytes for
 three dense matrices). Gustavson's row-wise algorithm multiplies sparse
-inputs in time proportional to the nonzero counts rather than $n^3$, using a
-dense accumulator row swept once per output row~\cite{gustavson1978}.
+inputs in time proportional to the nonzero counts rather than $n^3$: for
+output row $i$ it performs
+$\sum_{k \in \mathrm{supp}(A_i)} \mathrm{nnz}(B_k)$ scatter operations over
+a dense accumulator row, plus one $O(n)$ sweep of that accumulator per output
+row~\cite{gustavson1978}.
 
 \section{Methodology}
 \label{sec:methodology}
 
-\paragraph{Implementations.}
+\subsection{Implementations}
+
 All implementations are sequential, use double (float64) precision and are
 written in Java 17. The $i$-$j$-$k$ baseline, the matrix domain and the
 measurement harness are reused from assignment 1 and validated by its test
@@ -98,7 +116,8 @@ campaign), and \texttt{sparse\_csr\_gustavson} --- Gustavson's algorithm on
 canonical CSR (strictly increasing column indices per row) with a reusable
 dense accumulator outside the timed region.
 
-\paragraph{Inputs and environment.}
+\subsection{Inputs and environment}
+
 The dense methods of Part A multiply the shared inputs of assignment 1
 (little-endian float64, row-major, seed 42, values uniform in $[0,1)$) plus
 $n = 1500$. Part B generates declared-density inputs at
@@ -110,7 +129,8 @@ ran inside WSL2 (Ubuntu 26.04) on an Intel Core i7-10750H (6 cores /
 12 threads) with 16~GB DDR4, OpenJDK 17.0.20.1, Maven 3.9.12 and Python
 3.14.4 (numpy 2.5.3, pandas 3.0.6, matplotlib 3.11.2).
 
-\paragraph{Measurement protocol.}
+\subsection{Measurement protocol}
+
 The timer surrounds only the multiplication kernel: input loading,
 dense-to-CSR conversion and the result checksum are outside the timed
 region. Each configuration runs 3 warm-up repetitions (recorded, excluded)
@@ -122,7 +142,8 @@ results. Peak resident memory comes from \texttt{/proc/self/status}
 (\texttt{VmHWM}), peak heap from \texttt{MemoryPoolMXBean}; theoretical
 storage is reported alongside as a different quantity.
 
-\paragraph{Correctness.}
+\subsection{Correctness}
+
 Every optimised kernel is validated against the baseline on identity, zero,
 known-answer $3 \times 3$ and seeded random matrices (JUnit);
 independently, \texttt{correctness\_check.py} compares jar checksums
@@ -137,16 +158,17 @@ The campaign produced 230 raw dense samples (Part A) and 360 raw sparse
 samples (Part B), each configuration with 3 warm-ups plus 7 measured
 repetitions. All tables report the median of the 7 measured repetitions.
 
-\paragraph{Part A: dense optimisation.}
+\subsection{Part A: dense optimisation}
 
 Table~\ref{tab:dense-times} gives the kernel time per multiplication for
 every size reached by each method. The baseline completed $n = 1000$ in
 15.2~s and its single probe at $n = 1500$ exceeded the declared 60~s budget:
 the overrun itself is the result. Both optimised methods completed
-$n = 1500$ (1.7~s and 2.7~s); Fig.~\ref{fig:dense-time} shows the growth
-curves.
+$n = 1500$ (1.7~s and 2.7~s). Figure~\ref{fig:dense-time} shows the growth
+curves, and Figure~\ref{fig:dense-speedup} re-expresses the same
+measurements as speedups over the baseline.
 
-\begin{table}[htbp]
+\begin{table}[t]
 \centering
 \caption{Median kernel time per multiplication (seconds) for the three dense
 methods. ``budget'' marks the configuration whose probe exceeded 60~s.}
@@ -164,25 +186,23 @@ $n$ & $i$-$j$-$k$ baseline & $i$-$k$-$j$ reordering & cache blocking \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[htbp]
-    \centering
-    \begin{subfigure}[t]{0.54\linewidth}
-        \centering
-        \includegraphics[width=\linewidth]{figures/median_time_vs_size.pdf}
-        \caption{Kernel time per multiplication (median with IQR) versus
-        size, three dense methods.}
-        \label{fig:dense-time}
-    \end{subfigure}\hfill
-    \begin{subfigure}[t]{0.44\linewidth}
-        \centering
-        \includegraphics[width=\linewidth]{figures/peak_rss_all.pdf}
-        \caption{Peak resident memory versus size, both parts.}
-        \label{fig:memory}
-    \end{subfigure}
-    \caption{Growth with matrix size: kernel time and peak resident memory.}
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.72\linewidth]{figures/median_time_vs_size.pdf}
+\caption{Kernel time per multiplication versus matrix size (median with IQR,
+log--log), the three dense methods.}
+\label{fig:dense-time}
 \end{figure}
 
-\paragraph{Part B: sparse multiplication.}
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.72\linewidth]{figures/speedup_vs_baseline.pdf}
+\caption{Speedup of the two optimised dense methods over the baseline
+$i$-$j$-$k$ kernel versus matrix size.}
+\label{fig:dense-speedup}
+\end{figure}
+
+\subsection{Part B: sparse multiplication}
 
 Table~\ref{tab:sparse-speedup} shows the matched comparison: the ratio of
 the dense $i$-$k$-$j$ time over the CSR kernel time on identical logical
@@ -192,9 +212,10 @@ kernel wins by two orders of magnitude at $n = 1000$ and 1\% density
 reaching $1.8\times$ at 50\% density for $n = 1000$. At the smallest size
 ($n = 100$) fixed per-call overheads dominate: the dense method is faster
 from 10\% density onwards. Figure~\ref{fig:sparse-time} shows the absolute
-kernel times behind these ratios.
+kernel times behind these ratios, and Figure~\ref{fig:sparse-speedup} the
+ratios themselves.
 
-\begin{table}[htbp]
+\begin{table}[t]
 \centering
 \caption{Matched comparison: dense $i$-$k$-$j$ time divided by CSR kernel
 time (median); values above 1.0 favour the sparse representation. The
@@ -212,13 +233,30 @@ $n$ \textbackslash\ density \% & 1 & 5 & 10 & 20 & 50 \\
 \end{tabular}
 \end{table}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/sparse_time_vs_density.pdf}
+\caption{CSR kernel versus the matched dense comparison: kernel time
+versus declared density, per size (log--log).}
+\label{fig:sparse-time}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.72\linewidth]{figures/sparse_speedup_vs_density.pdf}
+\caption{Dense $i$-$k$-$j$ time divided by CSR kernel time versus declared
+density, per size; above the dashed line the sparse representation wins.}
+\label{fig:sparse-speedup}
+\end{figure}
+
 Table~\ref{tab:nnz} reports the realised output densification: the product
 of two matrices at density $d$ has expected nonzero fraction
 $1 - (1 - d^2)^n$, which approaches 1 rapidly. At $n = 1000$ a 5\% input
 already yields a 92\% dense output, so the sparse structure of the inputs
-does not propagate to the product.
+does not propagate to the product. Figure~\ref{fig:nnz-growth} plots the
+realised output fraction against the declared input density.
 
-\begin{table}[htbp]
+\begin{table}[t]
 \centering
 \caption{Median percentage of nonzero entries in the product $C$ (output
 density), from the \texttt{nnz\_c} column of the raw CSV.}
@@ -235,13 +273,22 @@ $n$ \textbackslash\ density \% & 1 & 5 & 10 & 20 & 50 \\
 \end{tabular}
 \end{table}
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.72\linewidth]{figures/nnz_growth_vs_density.pdf}
+\caption{Output densification: fraction of nonzeros in $C$ versus input
+density, per size.}
+\label{fig:nnz-growth}
+\end{figure}
+
 The separately measured dense-to-CSR conversion (Table~\ref{tab:conversion})
 costs 53--107~ms at $n = 1000$ and 80--179~ms at $n = 2000$ --- one to two
 orders of magnitude \emph{more} than the CSR kernel itself at low density
 (6.3~ms at $n = 1000$, 1\%). A pipeline starting from dense files pays this
 once per pair of matrices; natively sparse inputs never pay it.
+Figure~\ref{fig:conversion} compares the two components directly.
 
-\begin{table}[htbp]
+\begin{table}[t]
 \centering
 \caption{Median dense-to-CSR conversion time (milliseconds), measured
 outside the kernel timing.}
@@ -258,51 +305,100 @@ $n$ \textbackslash\ density \% & 1 & 5 & 10 & 20 & 50 \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[htbp]
-    \centering
-    \includegraphics[width=0.68\linewidth]{figures/sparse_time_vs_density.pdf}
-    \caption{CSR kernel versus the matched dense comparison: kernel time
-    versus declared density, per size.}
-    \label{fig:sparse-time}
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.72\linewidth]{figures/conversion_vs_kernel.pdf}
+\caption{Dense-to-CSR conversion time versus CSR kernel time (medians,
+log--log), per size and density.}
+\label{fig:conversion}
 \end{figure}
 
-\paragraph{Memory.}
+Charging that conversion once, the end-to-end ratio of the sparse pipeline
+(conversion + kernel) over the dense multiplication is shown in
+Figure~\ref{fig:pipeline}. It stays above~1 at every tested density for
+$n \ge 1000$ ($1.4$--$10.7\times$, and $23.1\times$ at the $n = 2000$
+probe) and at $n = 500$ up to 20\% ($1.4$--$2.1\times$); it falls below~1
+only at $n = 100$ ($0.08$--$0.13\times$) and at the densest configuration
+of $n = 500$ ($0.67\times$).
 
-Peak resident memory (Fig.~\ref{fig:memory}) is dominated by the JVM floor
-(about 44~MiB at small
-sizes): Part A measured 112~MiB at $n = 1000$ and about 142~MiB at
-$n = 1500$, essentially identical for the three methods --- the
-optimisations change the time, not the space. In Part B, peak RSS grows
+\begin{figure}[t]
+\centering
+\includegraphics[width=0.72\linewidth]{figures/pipeline_end_to_end.pdf}
+\caption{End-to-end sparse pipeline versus dense: dense time divided by
+(conversion + CSR kernel), so the one-off conversion is charged once; above
+the dashed line the pipeline wins.}
+\label{fig:pipeline}
+\end{figure}
+
+\subsection{Memory}
+
+Peak resident memory (Figure~\ref{fig:memory}) is dominated by the JVM floor
+(about 44~MiB at small sizes): Part A measured 112~MiB at $n = 1000$ and
+about 142~MiB at $n = 1500$, essentially identical for the three methods ---
+the optimisations change the time, not the space. In Part B, peak RSS grows
 with the realised nonzero counts (228--455~MiB at $n = 2000$), because the
-run also materialises the dense input files it loads before conversion. The
-theoretical quantities reported alongside each measurement in the raw CSV
-remain distinct: $24n^2$ bytes for
-three dense matrices versus $12\,\mathrm{nnz} + 4(n+1)$ bytes per CSR
-matrix.
+run also materialises the dense input files it loads before conversion.
 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/peak_rss_all.pdf}
+\caption{Peak resident memory versus size (Part A, left) and versus density
+for the CSR runs (Part B, right), medians per configuration.}
+\label{fig:memory}
+\end{figure}
+
+Figure~\ref{fig:storage} places that measured peak next to the theoretical
+structural storage --- $24n^2$ bytes for three dense matrices and
+$12\,\mathrm{nnz} + 4(n+1)$ bytes per CSR matrix. The roughly constant gap
+at small sizes is the JVM floor, and in Part B the peak additionally
+includes the dense input files materialised before conversion: the two
+curves are different quantities, reported side by side and never as one
+measurement.
+
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{figures/storage_theoretical_vs_observed.pdf}
+\caption{Theoretical structural storage (dashed) versus measured peak
+resident memory (solid) in bytes, log--log: Part A, dense $24n^2$ (left);
+Part B, CSR storage per density (right).}
+\label{fig:storage}
+\end{figure}
 
 \section{Discussion}
 \label{sec:discussion}
 
-\paragraph{Effect of the optimisations (RQ1).}
+\subsection{Effect of the optimisations (RQ1)}
+
 The two dense optimisations act on the memory-access pattern, not on the
 arithmetic: all three methods perform exactly $2n^3$ multiply--adds. The
 baseline's strided column access to $B$ is the dominant cost; removing it
 yields $4.7\times$ at $n = 200$, $7.4\times$ at $n = 500$ and $24.7\times$
 at $n = 1000$ for the $i$-$k$-$j$ reordering alone
-(Table~\ref{tab:dense-times}). Cache blocking is a second, smaller effect on
-top of the reordering: it ties plain $i$-$k$-$j$ up to $n = 500$ (slightly
-slower at $n = 100$ and $n = 500$, where tile bookkeeping is not yet
-repaid), then pulls ahead at the largest sizes ($28.3\times$ versus
-$24.7\times$ at $n = 1000$; 1.72~s versus 2.69~s at $n = 1500$). Below
-$n \approx 100$ differences are JIT and measurement noise
+(Table~\ref{tab:dense-times}, Figure~\ref{fig:dense-speedup}). Cache
+blocking is a second, smaller effect on top of the reordering: it ties plain
+$i$-$k$-$j$ up to $n = 500$ (slightly slower at $n = 100$ and $n = 500$,
+where tile bookkeeping is not yet repaid), then pulls ahead at the largest
+sizes ($28.3\times$ versus $24.7\times$ at $n = 1000$; 1.72~s versus
+2.69~s at $n = 1500$).
+
+The cache hierarchy explains why blocking pays only at the largest sizes:
+at $n = 1000$ the three dense matrices occupy 24~MB, more than the 12~MB
+last-level cache of the i7-10750H, so the baseline's strided reads of $B$
+become cache misses~\cite{frigo1999,hennessy2017}; the $i$-$k$-$j$ order
+streams $B$ and the output through cache, and each $64 \times 64$ tile of
+$B$ (32~KB) fits comfortably in the core's private 256~KB L2 cache for the
+whole tile~\cite{lam1991} --- but the tile bookkeeping only repays itself
+once the miss cost is large, i.e.\ at large $n$.
+
+Below $n \approx 100$ differences are JIT and measurement noise
 ($0.8\times$--$5.5\times$), so no claim is made for small matrices. The
 budget shows the impact: the baseline's probe at $n = 1500$ exceeded 60~s
 while both optimised kernels finished in under 3~s, extending the largest
 feasible size from $n = 1000$ to $n = 1500$ with identical peak RSS --- a
 purely time effect.
 
-\paragraph{Effect of sparse storage and input structure (RQ2).}
+\subsection{Effect of sparse storage and input structure (RQ2)}
+
 Three separate effects pull in opposite directions:
 \begin{enumerate}
     \item \textbf{Work scaling:} the CSR kernel's work grows with the
@@ -314,10 +410,11 @@ Three separate effects pull in opposite directions:
     \item \textbf{Output densification:} the product is not sparse even when
     the inputs are --- its expected nonzero fraction $1 - (1 - d^2)^n$ reaches
     92\% at $n = 1000$, $d = 5\%$ and 100\% for $d \ge 10\%$ at that size
-    (Table~\ref{tab:nnz}). The kernel builds a nearly dense output while
-    still paying per-nonzero indexing, and the CSR memory saving shrinks
-    toward the dense figure. \emph{Input density alone never determines the
-    outcome; the output structure matters just as much.}
+    (Table~\ref{tab:nnz}, Figure~\ref{fig:nnz-growth}). The kernel builds a
+    nearly dense output while still paying per-nonzero indexing, and the CSR
+    memory saving shrinks toward the dense figure. \emph{Input density alone
+    never determines the outcome; the output structure matters just as
+    much.}
     \item \textbf{Fixed per-call overheads:} the accumulator sweep and the
     output compaction cost $O(n^2)$ per multiplication even for a one-percent
     input, so at $n = 100$ the dense method wins from 10\% onwards
@@ -336,11 +433,14 @@ kernel, dominates that pipeline. It is paid once per pair of matrices and
 can be amortised over repeated multiplications (kernel timing excludes it,
 as declared); and even charged once at $n = 1000$, conversion + kernel
 (59~ms at 1\%) stays an order of magnitude below the 640~ms dense
-multiplication it replaces. It decides only one-shot multiplications of
-dense inputs at high density, where the kernel barely beats the dense
-method.
+multiplication it replaces. Figure~\ref{fig:pipeline} charges it once at
+every configuration: the advantage survives intact for all of $n \ge 1000$
+and for $n = 500$ up to 20\%, and disappears exactly where the kernel itself
+was already marginal --- $0.67\times$ at $n = 500$, 50\% and
+$0.08$--$0.13\times$ at $n = 100$.
 
-\paragraph{Threats to validity.}
+\subsection{Threats to validity}
+
 Results are scoped to one machine, one JVM, sequential float64 Java kernels,
 the tested sizes ($n \le 2000$), the tested densities (1--50\%) and the
 declared block size of 64 (not tuned). Dense comparison rows at $n = 2000$
@@ -378,6 +478,8 @@ remain unexplored); the kernels are sequential, with parallelism left to the
 next assignment; and the density grid stops at 50\%, so the crossover above
 that point is not localised.
 
+\section{References}
+\swallownextsectionstar
 \begin{thebibliography}{9}
     \bibitem{higham2002}
     N.~J. Higham, \emph{Accuracy and Stability of Numerical Algorithms},
@@ -396,17 +498,43 @@ that point is not localised.
     \bibitem{gustavson1978}
     F.~G. Gustavson, ``Two fast algorithms for dense matrices,''
     \emph{ACM Trans. Math. Software}, vol.~4, no.~3, pp. 250--259, 1978.
+
+    \bibitem{frigo1999}
+    M.~Frigo, C.~E. Leiserson, H.~H. Prokop, and S.~Ramachandran,
+    ``Cache-oblivious algorithms,'' in \emph{Proc. 40th Annual Symposium on
+    Foundations of Computer Science (FOCS)}, 1999, pp. 285--297.
+
+    \bibitem{hennessy2017}
+    J.~L. Hennessy and D.~A. Patterson, \emph{Computer Architecture: A
+    Quantitative Approach}, 6th~ed. Morgan Kaufmann, 2017.
 \end{thebibliography}
 
-\section*{Reproducibility materials}
+\section{Reproducibility materials}
 
-Source code, raw CSVs, the sparse input manifest and the scripts that
-regenerate every table and figure ship with this report in
-\texttt{Assignment02\_Lorenzo\_Materials.zip}, attached to the
-\texttt{assignment-02} release of the course repository. From
-\texttt{assignment-02/}, \texttt{run\_experiments.py} and
-\texttt{plot\_results.py} reproduce the campaign and the figures (exact
-commands in the README).
+All materials ship with this report: the Java (Maven) and Python sources;
+the JUnit tests and the independent NumPy cross-check; the dense and sparse
+input generators; the raw campaign CSVs (\texttt{dense\_time\_raw.csv},
+\texttt{sparse\_time\_raw.csv}, \texttt{memory\_raw.csv} and
+\texttt{run\_log.txt}); and the figure script plus figure PDFs. They are
+attached as \texttt{Assignment02\_Lorenzo\_Materials.zip} to the
+\texttt{assignment-02} release of the course repository. From the project
+root, inside WSL2:
+
+\begin{verbatim}
+.venv/bin/python python/generate_inputs.py --sizes 1500
+.venv/bin/python python/generate_sparse_inputs.py
+mvn -q verify
+mvn -q -DskipTests package
+.venv/bin/python python/correctness_check.py
+.venv/bin/python -m compileall python
+.venv/bin/python python/run_experiments.py  # campaign
+.venv/bin/python python/plot_results.py     # figures/*.pdf
+\end{verbatim}
+
+Exact toolchain versions and the full protocol are documented in
+\texttt{README.md}. Runner exit codes: 0 (ok), 2 (invalid arguments), 3
+(time budget exceeded), 4 (missing input files). The input binaries are
+regenerated deterministically from seed 42 and are not shipped.
 \url{https://github.com/aythamilorenzo/bigdata-individual-assignments}.
 
 \end{document}

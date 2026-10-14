@@ -187,7 +187,7 @@ mvn -q -DskipTests package                      # shaded runner jar
 
 ## 7. Deliverables
 
-- `Assignment02_Lorenzo_Report.pdf` — 4–6 page report (LaTeX, English,
+- `Assignment02_Lorenzo_Report.pdf` — LaTeX report (English,
   compiled on Overleaf from `report/main.tex`).
 - `Assignment02_Lorenzo_Materials.zip` — source code, README, raw CSVs,
   input manifest and scripts from this folder.
