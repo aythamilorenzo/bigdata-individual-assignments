@@ -43,7 +43,6 @@ algorithm and protocol.
 ## 2. Repository layout
 
 ```
-AGENTS.md                     Project conventions (agent guidelines)
 pom.xml                       Maven project (Java 17, JUnit 5, shaded runner jar)
 src/main/java/...             Java: matrix, loader, kernel, benchmark runner
 src/test/java/...             Java: JUnit correctness and harness tests
@@ -189,9 +188,9 @@ Median time per multiplication (ms), 7 measured repetitions after 3 warm-ups:
 
 ## 6. Deliverables
 
-- `Assignment01_AythamiLorenzo_Report.pdf` — 4–6 page report (LaTeX, English,
+- `Assignment01_Lorenzo_Report.pdf` — 4–6 page report (LaTeX, English,
   compiled on Overleaf from `report/main.tex`).
-- `Assignment01_AythamiLorenzo_Materials.zip` — source code, README, raw CSVs
+- `Assignment01_Lorenzo_Materials.zip` — source code, README, raw CSVs
   and scripts from this folder.
 
 Both files are attached to the `assignment-01` release of the global

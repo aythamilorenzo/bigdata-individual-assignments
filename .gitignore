@@ -16,6 +16,23 @@ correctness_test
 # Release staging (zips are attached to GitHub releases, never committed)
 dist/
 
+# Agent guidelines (kept locally, never published)
+AGENTS.md
+AGENTS
+
+# Generated matrix inputs of assignment 2 (deterministic from seed 42:
+# regenerate with python/generate_inputs.py and python/generate_sparse_inputs.py)
+assignment-02/data/inputs/*.bin
+assignment-02/data/sparse/*.bin
+
+# LaTeX build artefacts (reports are compiled on Overleaf; the deliverable
+# PDF travels with the release, never with the repository)
+**/report/main.aux
+**/report/main.log
+**/report/main.out
+**/report/main.toc
+**/report/main.pdf
+
 # Editor / OS noise
 .DS_Store
 Thumbs.db

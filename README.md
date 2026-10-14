@@ -9,13 +9,12 @@ PDF and a materials zip.
 | Assignment | Folder | Status | Tag |
 |---|---|---|---|
 | 1 — Basic matrix multiplication benchmark (Python · Java · C · Go) | [`assignment-01/`](assignment-01/) | ✅ Completed | [`assignment-01`](../../releases) |
+| 2 — Optimised approaches and sparse matrices (Java · Python) | [`assignment-02/`](assignment-02/) | 🚧 In progress | — |
 
 ## How to work in this repository
 
 - Every assignment carries its own `README.md` with the exact build,
   correctness and execution commands for that assignment.
-- `AGENTS.md` in each assignment folder holds the coding conventions and the
-  experimental protocol that apply to it.
 - Commit messages are in English and follow Conventional Commits
   (`feat:`, `fix:`, `docs:`, `data:`, `chore:`); commits are atomic and stage
   explicit paths.
@@ -25,6 +24,6 @@ PDF and a materials zip.
 
 ## Deliverables per assignment
 
-- `AssignmentNN_AythamiLorenzo_Report.pdf` — final report.
-- `AssignmentNN_AythamiLorenzo_Materials.zip` — source, README, raw data and
+- `AssignmentNN_Lorenzo_Report.pdf` — final report.
+- `AssignmentNN_Lorenzo_Materials.zip` — source, README, raw data and
   scripts (attached to the corresponding release).
