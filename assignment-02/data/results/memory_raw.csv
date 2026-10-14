@@ -1,0 +1,119 @@
+size,density,method,metric,tool,value_bytes,theoretical_bytes
+10,,triple_loop_ijk_dense,peak_rss,/proc/self/status VmHWM,46424064,2400
+10,,triple_loop_ijk_dense,peak_heap,MemoryPoolMXBean,3067904,2400
+10,,triple_loop_ikj_dense,peak_rss,/proc/self/status VmHWM,46723072,2400
+10,,triple_loop_ikj_dense,peak_heap,MemoryPoolMXBean,3067904,2400
+10,,blocked_ijk_dense,peak_rss,/proc/self/status VmHWM,46641152,2400
+10,,blocked_ijk_dense,peak_heap,MemoryPoolMXBean,3067904,2400
+25,,triple_loop_ijk_dense,peak_rss,/proc/self/status VmHWM,46477312,15000
+25,,triple_loop_ijk_dense,peak_heap,MemoryPoolMXBean,3067904,15000
+25,,triple_loop_ikj_dense,peak_rss,/proc/self/status VmHWM,46735360,15000
+25,,triple_loop_ikj_dense,peak_heap,MemoryPoolMXBean,3067904,15000
+25,,blocked_ijk_dense,peak_rss,/proc/self/status VmHWM,46731264,15000
+25,,blocked_ijk_dense,peak_heap,MemoryPoolMXBean,2019328,15000
+50,,triple_loop_ijk_dense,peak_rss,/proc/self/status VmHWM,46608384,60000
+50,,triple_loop_ijk_dense,peak_heap,MemoryPoolMXBean,3067904,60000
+50,,triple_loop_ikj_dense,peak_rss,/proc/self/status VmHWM,46710784,60000
+50,,triple_loop_ikj_dense,peak_heap,MemoryPoolMXBean,3067904,60000
+50,,blocked_ijk_dense,peak_rss,/proc/self/status VmHWM,46649344,60000
+50,,blocked_ijk_dense,peak_heap,MemoryPoolMXBean,3067904,60000
+100,,triple_loop_ijk_dense,peak_rss,/proc/self/status VmHWM,47136768,240000
+100,,triple_loop_ijk_dense,peak_heap,MemoryPoolMXBean,3067904,240000
+100,,triple_loop_ikj_dense,peak_rss,/proc/self/status VmHWM,47288320,240000
+100,,triple_loop_ikj_dense,peak_heap,MemoryPoolMXBean,3067904,240000
+100,,blocked_ijk_dense,peak_rss,/proc/self/status VmHWM,47423488,240000
+100,,blocked_ijk_dense,peak_heap,MemoryPoolMXBean,3067904,240000
+200,,triple_loop_ijk_dense,peak_rss,/proc/self/status VmHWM,48594944,960000
+200,,triple_loop_ijk_dense,peak_heap,MemoryPoolMXBean,3067904,960000
+200,,triple_loop_ikj_dense,peak_rss,/proc/self/status VmHWM,48791552,960000
+200,,triple_loop_ikj_dense,peak_heap,MemoryPoolMXBean,3067904,960000
+200,,blocked_ijk_dense,peak_rss,/proc/self/status VmHWM,48893952,960000
+200,,blocked_ijk_dense,peak_heap,MemoryPoolMXBean,3067904,960000
+500,,triple_loop_ijk_dense,peak_rss,/proc/self/status VmHWM,58847232,6000000
+500,,triple_loop_ijk_dense,peak_heap,MemoryPoolMXBean,13553664,6000000
+500,,triple_loop_ikj_dense,peak_rss,/proc/self/status VmHWM,58982400,6000000
+500,,triple_loop_ikj_dense,peak_heap,MemoryPoolMXBean,13553664,6000000
+500,,blocked_ijk_dense,peak_rss,/proc/self/status VmHWM,59060224,6000000
+500,,blocked_ijk_dense,peak_heap,MemoryPoolMXBean,12505088,6000000
+1000,,triple_loop_ijk_dense,peak_rss,/proc/self/status VmHWM,117391360,24000000
+1000,,triple_loop_ijk_dense,peak_heap,MemoryPoolMXBean,26457600,24000000
+1000,,triple_loop_ikj_dense,peak_rss,/proc/self/status VmHWM,117395456,24000000
+1000,,triple_loop_ikj_dense,peak_heap,MemoryPoolMXBean,26473472,24000000
+1000,,blocked_ijk_dense,peak_rss,/proc/self/status VmHWM,117288960,24000000
+1000,,blocked_ijk_dense,peak_heap,MemoryPoolMXBean,26465280,24000000
+1500,,triple_loop_ikj_dense,peak_rss,/proc/self/status VmHWM,148242432,54000000
+1500,,triple_loop_ikj_dense,peak_heap,MemoryPoolMXBean,56542208,54000000
+1500,,blocked_ijk_dense,peak_rss,/proc/self/status VmHWM,149585920,54000000
+1500,,blocked_ijk_dense,peak_heap,MemoryPoolMXBean,56542208,54000000
+100,1,sparse_csr_gustavson,peak_rss,/proc/self/status VmHWM,47550464,4872
+100,1,sparse_csr_gustavson,peak_heap,MemoryPoolMXBean,3067904,4872
+100,1,triple_loop_ikj_dense,peak_rss,/proc/self/status VmHWM,47431680,240000
+100,1,triple_loop_ikj_dense,peak_heap,MemoryPoolMXBean,3067904,240000
+100,5,sparse_csr_gustavson,peak_rss,/proc/self/status VmHWM,48312320,38772
+100,5,sparse_csr_gustavson,peak_heap,MemoryPoolMXBean,3067904,38772
+100,5,triple_loop_ikj_dense,peak_rss,/proc/self/status VmHWM,47452160,240000
+100,5,triple_loop_ikj_dense,peak_heap,MemoryPoolMXBean,3067904,240000
+100,10,sparse_csr_gustavson,peak_rss,/proc/self/status VmHWM,48574464,99672
+100,10,sparse_csr_gustavson,peak_heap,MemoryPoolMXBean,4116480,99672
+100,10,triple_loop_ikj_dense,peak_rss,/proc/self/status VmHWM,47329280,240000
+100,10,triple_loop_ikj_dense,peak_heap,MemoryPoolMXBean,3067904,240000
+100,20,sparse_csr_gustavson,peak_rss,/proc/self/status VmHWM,49516544,167724
+100,20,sparse_csr_gustavson,peak_heap,MemoryPoolMXBean,4116480,167724
+100,20,triple_loop_ikj_dense,peak_rss,/proc/self/status VmHWM,47443968,240000
+100,20,triple_loop_ikj_dense,peak_heap,MemoryPoolMXBean,3067904,240000
+100,50,sparse_csr_gustavson,peak_rss,/proc/self/status VmHWM,49418240,241212
+100,50,sparse_csr_gustavson,peak_heap,MemoryPoolMXBean,5165056,241212
+100,50,triple_loop_ikj_dense,peak_rss,/proc/self/status VmHWM,47419392,240000
+100,50,triple_loop_ikj_dense,peak_heap,MemoryPoolMXBean,3067904,240000
+500,1,sparse_csr_gustavson,peak_rss,/proc/self/status VmHWM,59641856,212436
+500,1,sparse_csr_gustavson,peak_heap,MemoryPoolMXBean,12505088,212436
+500,1,triple_loop_ikj_dense,peak_rss,/proc/self/status VmHWM,59768832,6000000
+500,1,triple_loop_ikj_dense,peak_heap,MemoryPoolMXBean,13553664,6000000
+500,5,sparse_csr_gustavson,peak_rss,/proc/self/status VmHWM,88047616,2453148
+500,5,sparse_csr_gustavson,peak_heap,MemoryPoolMXBean,55496704,2453148
+500,5,triple_loop_ikj_dense,peak_rss,/proc/self/status VmHWM,59113472,6000000
+500,5,triple_loop_ikj_dense,peak_heap,MemoryPoolMXBean,13553664,6000000
+500,10,sparse_csr_gustavson,peak_rss,/proc/self/status VmHWM,97378304,3585384
+500,10,sparse_csr_gustavson,peak_heap,MemoryPoolMXBean,55496704,3585384
+500,10,triple_loop_ikj_dense,peak_rss,/proc/self/status VmHWM,59424768,6000000
+500,10,triple_loop_ikj_dense,peak_heap,MemoryPoolMXBean,13553664,6000000
+500,20,sparse_csr_gustavson,peak_rss,/proc/self/status VmHWM,98807808,4206012
+500,20,sparse_csr_gustavson,peak_heap,MemoryPoolMXBean,56545280,4206012
+500,20,triple_loop_ikj_dense,peak_rss,/proc/self/status VmHWM,59506688,6000000
+500,20,triple_loop_ikj_dense,peak_heap,MemoryPoolMXBean,13553664,6000000
+500,50,sparse_csr_gustavson,peak_rss,/proc/self/status VmHWM,101130240,6006012
+500,50,sparse_csr_gustavson,peak_heap,MemoryPoolMXBean,57593856,6006012
+500,50,triple_loop_ikj_dense,peak_rss,/proc/self/status VmHWM,59817984,6000000
+500,50,triple_loop_ikj_dense,peak_heap,MemoryPoolMXBean,13553664,6000000
+1000,1,sparse_csr_gustavson,peak_rss,/proc/self/status VmHWM,119312384,1397604
+1000,1,sparse_csr_gustavson,peak_heap,MemoryPoolMXBean,58357616,1397604
+1000,1,triple_loop_ikj_dense,peak_rss,/proc/self/status VmHWM,117268480,24000000
+1000,1,triple_loop_ikj_dense,peak_heap,MemoryPoolMXBean,26361344,24000000
+1000,5,sparse_csr_gustavson,peak_rss,/proc/self/status VmHWM,181817344,12230856
+1000,5,sparse_csr_gustavson,peak_heap,MemoryPoolMXBean,149162512,12230856
+1000,5,triple_loop_ikj_dense,peak_rss,/proc/self/status VmHWM,117301248,24000000
+1000,5,triple_loop_ikj_dense,peak_heap,MemoryPoolMXBean,26369536,24000000
+1000,10,sparse_csr_gustavson,peak_rss,/proc/self/status VmHWM,184029184,14411556
+1000,10,sparse_csr_gustavson,peak_heap,MemoryPoolMXBean,138133008,14411556
+1000,10,triple_loop_ikj_dense,peak_rss,/proc/self/status VmHWM,117194752,24000000
+1000,10,triple_loop_ikj_dense,peak_heap,MemoryPoolMXBean,26377216,24000000
+1000,20,sparse_csr_gustavson,peak_rss,/proc/self/status VmHWM,190124032,16812012
+1000,20,sparse_csr_gustavson,peak_heap,MemoryPoolMXBean,152981520,16812012
+1000,20,triple_loop_ikj_dense,peak_rss,/proc/self/status VmHWM,117366784,24000000
+1000,20,triple_loop_ikj_dense,peak_heap,MemoryPoolMXBean,26369536,24000000
+1000,50,sparse_csr_gustavson,peak_rss,/proc/self/status VmHWM,178925568,24012012
+1000,50,sparse_csr_gustavson,peak_heap,MemoryPoolMXBean,121516560,24012012
+1000,50,triple_loop_ikj_dense,peak_rss,/proc/self/status VmHWM,117321728,24000000
+1000,50,triple_loop_ikj_dense,peak_heap,MemoryPoolMXBean,26377216,24000000
+2000,1,sparse_csr_gustavson,peak_rss,/proc/self/status VmHWM,238714880,9676260
+2000,1,sparse_csr_gustavson,peak_heap,MemoryPoolMXBean,153082912,9676260
+2000,5,sparse_csr_gustavson,peak_rss,/proc/self/status VmHWM,402653184,52497024
+2000,5,sparse_csr_gustavson,peak_heap,MemoryPoolMXBean,274331776,52497024
+2000,10,sparse_csr_gustavson,peak_rss,/proc/self/status VmHWM,341585920,57624012
+2000,10,sparse_csr_gustavson,peak_heap,MemoryPoolMXBean,233463744,57624012
+2000,10,triple_loop_ikj_dense,peak_rss,/proc/self/status VmHWM,248127488,96000000
+2000,10,triple_loop_ikj_dense,peak_heap,MemoryPoolMXBean,98305024,96000000
+2000,20,sparse_csr_gustavson,peak_rss,/proc/self/status VmHWM,477122560,67224012
+2000,20,sparse_csr_gustavson,peak_heap,MemoryPoolMXBean,358511216,67224012
+2000,50,sparse_csr_gustavson,peak_rss,/proc/self/status VmHWM,458043392,96024012
+2000,50,sparse_csr_gustavson,peak_heap,MemoryPoolMXBean,336745536,96024012

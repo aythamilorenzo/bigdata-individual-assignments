@@ -1,0 +1,21 @@
+size,density_percent,sparsity_percent,nnz_a,nnz_b,seed_sequence,value_range,numeric_type,position_distribution
+100,1,99,100,100,"[42, 100, 1]","uniform [0, 1)","float64 little-endian, row-major",uniform without replacement
+100,5,95,500,500,"[42, 100, 5]","uniform [0, 1)","float64 little-endian, row-major",uniform without replacement
+100,10,90,1000,1000,"[42, 100, 10]","uniform [0, 1)","float64 little-endian, row-major",uniform without replacement
+100,20,80,2000,2000,"[42, 100, 20]","uniform [0, 1)","float64 little-endian, row-major",uniform without replacement
+100,50,50,5000,5000,"[42, 100, 50]","uniform [0, 1)","float64 little-endian, row-major",uniform without replacement
+500,1,99,2500,2500,"[42, 500, 1]","uniform [0, 1)","float64 little-endian, row-major",uniform without replacement
+500,5,95,12500,12500,"[42, 500, 5]","uniform [0, 1)","float64 little-endian, row-major",uniform without replacement
+500,10,90,25000,25000,"[42, 500, 10]","uniform [0, 1)","float64 little-endian, row-major",uniform without replacement
+500,20,80,50000,50000,"[42, 500, 20]","uniform [0, 1)","float64 little-endian, row-major",uniform without replacement
+500,50,50,125000,125000,"[42, 500, 50]","uniform [0, 1)","float64 little-endian, row-major",uniform without replacement
+1000,1,99,10000,10000,"[42, 1000, 1]","uniform [0, 1)","float64 little-endian, row-major",uniform without replacement
+1000,5,95,50000,50000,"[42, 1000, 5]","uniform [0, 1)","float64 little-endian, row-major",uniform without replacement
+1000,10,90,100000,100000,"[42, 1000, 10]","uniform [0, 1)","float64 little-endian, row-major",uniform without replacement
+1000,20,80,200000,200000,"[42, 1000, 20]","uniform [0, 1)","float64 little-endian, row-major",uniform without replacement
+1000,50,50,500000,500000,"[42, 1000, 50]","uniform [0, 1)","float64 little-endian, row-major",uniform without replacement
+2000,1,99,40000,40000,"[42, 2000, 1]","uniform [0, 1)","float64 little-endian, row-major",uniform without replacement
+2000,5,95,200000,200000,"[42, 2000, 5]","uniform [0, 1)","float64 little-endian, row-major",uniform without replacement
+2000,10,90,400000,400000,"[42, 2000, 10]","uniform [0, 1)","float64 little-endian, row-major",uniform without replacement
+2000,20,80,800000,800000,"[42, 2000, 20]","uniform [0, 1)","float64 little-endian, row-major",uniform without replacement
+2000,50,50,2000000,2000000,"[42, 2000, 50]","uniform [0, 1)","float64 little-endian, row-major",uniform without replacement
