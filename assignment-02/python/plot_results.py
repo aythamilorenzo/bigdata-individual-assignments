@@ -3,13 +3,15 @@
 Every figure is regenerated from the raw CSVs alone and written as PDF into
 report/figures/ for inclusion in the LaTeX report:
 
-- median_time_vs_size.pdf       Part A: kernel time per method vs n (log-log)
-- speedup_vs_baseline.pdf       Part A: speedup of the optimised methods
-- sparse_time_vs_density.pdf    Part B: CSR vs matched dense, time vs density
-- sparse_speedup_vs_density.pdf Part B: dense / CSR speedup vs density
-- nnz_growth_vs_density.pdf     Part B: product densification (nnz_c / n^2)
-- conversion_vs_kernel.pdf      Part B: dense-to-CSR conversion vs kernel time
-- peak_rss_all.pdf              memory: peak RSS for both parts
+- median_time_vs_size.pdf            Part A: kernel time per method vs n (log-log)
+- speedup_vs_baseline.pdf            Part A: speedup of the optimised methods
+- sparse_time_vs_density.pdf         Part B: CSR vs matched dense, time vs density
+- sparse_speedup_vs_density.pdf      Part B: dense / CSR speedup vs density
+- nnz_growth_vs_density.pdf          Part B: product densification (nnz_c / n^2)
+- conversion_vs_kernel.pdf           Part B: dense-to-CSR conversion vs kernel time
+- pipeline_end_to_end.pdf            Part B: end-to-end speedup charging conversion once
+- peak_rss_all.pdf                   memory: peak RSS for both parts
+- storage_theoretical_vs_observed.pdf memory: theoretical storage vs peak RSS (bytes)
 """
 
 from __future__ import annotations
@@ -203,6 +205,37 @@ def plot_conversion_vs_kernel(sparse: pd.DataFrame) -> None:
     plt.close(fig)
 
 
+def plot_pipeline_end_to_end(sparse: pd.DataFrame) -> None:
+    """End-to-end speedup of the sparse pipeline (conversion + kernel) over dense."""
+    csr_rows = sparse[sparse["representation"] == "csr"]
+    conversion = csr_rows.groupby(["size", "density"])["conversion_time_ns"].median().reset_index()
+    kernel = median_iqr(csr_rows, ["size", "density"],
+                        column="kernel_time_ns_per_multiply")
+    dense = median_iqr(sparse[sparse["representation"] == "dense"],
+                       ["size", "density"],
+                       column="kernel_time_ns_per_multiply")
+    merged = (dense.merge(kernel, on=["size", "density"], suffixes=("_dense", "_csr"))
+                   .merge(conversion, on=["size", "density"]))
+    merged["pipeline_ns"] = merged["median_csr"] + merged["conversion_time_ns"]
+    merged["end_to_end_speedup"] = merged["median_dense"] / merged["pipeline_ns"]
+    fig, ax = plt.subplots(figsize=(6.4, 4.2))
+    for size in sorted(merged["size"].unique()):
+        rows = merged[merged["size"] == size].sort_values("density")
+        ax.plot(rows["density"], rows["end_to_end_speedup"], "o-",
+                label=f"n = {size}")
+    ax.axhline(1.0, color="black", linewidth=0.8, linestyle="--")
+    ax.set_xscale("log")
+    ax.set_yscale("log")
+    ax.set_xlabel("density (%)")
+    ax.set_ylabel("dense / (conversion + CSR kernel)")
+    ax.set_title("End-to-end sparse pipeline: conversion charged once")
+    ax.legend()
+    ax.grid(True, which="both", linewidth=0.4, alpha=0.6)
+    fig.tight_layout()
+    fig.savefig(FIGURES_DIR / "pipeline_end_to_end.pdf")
+    plt.close(fig)
+
+
 def plot_peak_rss(dense: pd.DataFrame, memory: pd.DataFrame) -> None:
     fig, (ax_dense, ax_sparse) = plt.subplots(1, 2, figsize=(9.6, 4.0))
 
@@ -235,6 +268,50 @@ def plot_peak_rss(dense: pd.DataFrame, memory: pd.DataFrame) -> None:
     plt.close(fig)
 
 
+def plot_storage_theoretical_vs_observed(memory: pd.DataFrame) -> None:
+    """Theoretical structural storage versus measured peak RSS, in bytes."""
+    fig, (ax_dense, ax_sparse) = plt.subplots(1, 2, figsize=(9.6, 4.0))
+
+    part_a = memory[(memory["density"].isna()) & (memory["metric"] == "peak_rss")]
+    theory = (part_a.dropna(subset=["theoretical_bytes"])
+              .groupby("size", as_index=False)["theoretical_bytes"].first()
+              .sort_values("size"))
+    ax_dense.plot(theory["size"], theory["theoretical_bytes"], "k--",
+                  linewidth=1.2, label="theoretical 24n²")
+    for method, label in DENSE_METHOD_LABELS.items():
+        rows = part_a[part_a["method"] == method].sort_values("size")
+        ax_dense.plot(rows["size"], rows["value_bytes"], "o-", label=f"peak RSS {label}")
+    ax_dense.set_xscale("log")
+    ax_dense.set_yscale("log")
+    ax_dense.set_xlabel("matrix size n")
+    ax_dense.set_ylabel("bytes")
+    ax_dense.set_title("Part A: dense storage vs process peak")
+    ax_dense.legend(fontsize=7)
+    ax_dense.grid(True, which="both", linewidth=0.4, alpha=0.6)
+
+    part_b = memory[(memory["density"].notna()) & (memory["metric"] == "peak_rss")]
+    csr = part_b[part_b["method"] == CSR_METHOD]
+    for size in sorted(csr["size"].unique()):
+        rows = csr[csr["size"] == size].sort_values("density")
+        ax_sparse.plot(rows["density"], rows["value_bytes"], "o-",
+                       label=f"n = {size}")
+        ax_sparse.plot(rows["density"], rows["theoretical_bytes"], "--",
+                       linewidth=1.0)
+    ax_sparse.plot([], [], "k--", linewidth=1.0,
+                   label="theoretical 12·nnz + 4(n+1)")
+    ax_sparse.set_xscale("log")
+    ax_sparse.set_yscale("log")
+    ax_sparse.set_xlabel("density (%)")
+    ax_sparse.set_ylabel("bytes")
+    ax_sparse.set_title("Part B: CSR storage vs process peak")
+    ax_sparse.legend(fontsize=7)
+    ax_sparse.grid(True, which="both", linewidth=0.4, alpha=0.6)
+
+    fig.tight_layout()
+    fig.savefig(FIGURES_DIR / "storage_theoretical_vs_observed.pdf")
+    plt.close(fig)
+
+
 def main() -> int:
     dense_path = RESULTS_DIR / "dense_time_raw.csv"
     sparse_path = RESULTS_DIR / "sparse_time_raw.csv"
@@ -255,7 +332,9 @@ def main() -> int:
     plot_sparse_speedup_vs_density(sparse)
     plot_nnz_growth(sparse)
     plot_conversion_vs_kernel(sparse)
+    plot_pipeline_end_to_end(sparse)
     plot_peak_rss(dense, memory)
+    plot_storage_theoretical_vs_observed(memory)
     print(f"figures written to {FIGURES_DIR}")
     return 0
 
