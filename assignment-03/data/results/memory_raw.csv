@@ -1,0 +1,65 @@
+size,threads,method,metric,tool,value_bytes,theoretical_bytes
+500,1,blocked_ijk_sequential,peak_rss,/proc/self/status VmHWM,59912192,6000000
+500,1,blocked_ijk_sequential,peak_heap,MemoryPoolMXBean,14602240,6000000
+500,1,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,60235776,6000000
+500,1,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,14602240,6000000
+500,2,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,60715008,6000000
+500,2,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,14602240,6000000
+500,4,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,60940288,6000000
+500,4,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,14602240,6000000
+500,6,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,60829696,6000000
+500,6,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,16699392,6000000
+500,8,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,61276160,6000000
+500,8,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,16699392,6000000
+500,12,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,61722624,6000000
+500,12,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,18796544,6000000
+500,24,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,63197184,6000000
+500,24,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,22990848,6000000
+1000,1,blocked_ijk_sequential,peak_rss,/proc/self/status VmHWM,114704384,24000000
+1000,1,blocked_ijk_sequential,peak_heap,MemoryPoolMXBean,25617408,24000000
+1000,1,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,115167232,24000000
+1000,1,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,25617408,24000000
+1000,2,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,115314688,24000000
+1000,2,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,25625088,24000000
+1000,4,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,115556352,24000000
+1000,4,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,27730432,24000000
+1000,6,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,115851264,24000000
+1000,6,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,27722240,24000000
+1000,8,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,116035584,24000000
+1000,8,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,27714560,24000000
+1000,12,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,116285440,24000000
+1000,12,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,27722240,24000000
+1000,24,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,117706752,24000000
+1000,24,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,29803520,24000000
+1500,1,blocked_ijk_sequential,peak_rss,/proc/self/status VmHWM,147779584,54000000
+1500,1,blocked_ijk_sequential,peak_heap,MemoryPoolMXBean,73647104,54000000
+1500,1,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,148631552,54000000
+1500,1,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,73647104,54000000
+1500,2,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,148594688,54000000
+1500,2,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,73659392,54000000
+1500,4,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,147148800,54000000
+1500,4,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,73647104,54000000
+1500,6,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,147390464,54000000
+1500,6,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,75744256,54000000
+1500,8,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,147587072,54000000
+1500,8,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,75756544,54000000
+1500,12,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,148213760,54000000
+1500,12,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,75756544,54000000
+1500,24,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,167616512,54000000
+1500,24,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,77733376,54000000
+2000,1,blocked_ijk_sequential,peak_rss,/proc/self/status VmHWM,225079296,96000000
+2000,1,blocked_ijk_sequential,peak_heap,MemoryPoolMXBean,99529728,96000000
+2000,1,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,226340864,96000000
+2000,1,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,99513344,96000000
+2000,2,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,225853440,96000000
+2000,2,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,99529728,96000000
+2000,4,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,225058816,96000000
+2000,4,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,101626880,96000000
+2000,6,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,225230848,96000000
+2000,6,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,103707648,96000000
+2000,8,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,225619968,96000000
+2000,8,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,103707648,96000000
+2000,12,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,226185216,96000000
+2000,12,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,107901952,96000000
+2000,24,blocked_ijk_parallel,peak_rss,/proc/self/status VmHWM,227786752,96000000
+2000,24,blocked_ijk_parallel,peak_heap,MemoryPoolMXBean,116290560,96000000
