@@ -3,6 +3,7 @@
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{amsmath}
+\usepackage{placeins}
 \usepackage[colorlinks=true,linkcolor=black,citecolor=blue,urlcolor=blue]{hyperref}
 
 \title{\textbf{Distributed Matrix Multiplication on Shared Memory:\\
@@ -153,6 +154,7 @@ at fixed $p$ the speedup generally grows with $n$. The best measured
 speedup is 3.54$\times$ at $n = 2000$, $p = 8$; no configuration reaches
 the ideal $S(p) = p$ line (Figure~\ref{fig:speedup}).
 
+\FloatBarrier
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{figures/timing_vs_threads.png}
@@ -160,6 +162,7 @@ the ideal $S(p) = p$ line (Figure~\ref{fig:speedup}).
 \label{fig:timing}
 \end{figure}
 
+\FloatBarrier
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{figures/speedup_efficiency.png}
@@ -177,6 +180,7 @@ Efficiency is near-ideal at $p = 2$ (0.85--0.95), moderate at $p = 4$
 overhead (broadcast, collect, Spark scheduler) is visible at small sizes
 but becomes negligible at $n = 2000$.
 
+\FloatBarrier
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\linewidth]{figures/overhead_analysis.png}
