@@ -10,6 +10,7 @@ PDF and a materials zip.
 |---|---|---|---|
 | 1 — Basic matrix multiplication benchmark (Python · Java · C · Go) | [`assignment-01/`](assignment-01/) | ✅ Completed | [`assignment-01`](../../releases) |
 | 2 — Optimised approaches and sparse matrices (Java · Python) | [`assignment-02/`](assignment-02/) | ✅ Completed | [`assignment-02`](../../releases) |
+| 3 — Parallel matrix multiplication and vectorisation (Java · Python) | [`assignment-03/`](assignment-03/) | ✅ Completed | [`assignment-03`](../../releases) |
 
 ## How to work in this repository
 
