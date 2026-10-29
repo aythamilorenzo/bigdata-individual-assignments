@@ -8,7 +8,7 @@
 
 \title{\textbf{Distributed Matrix Multiplication on Shared Memory:\\
 An Empirical Study of Thread-Count Scaling}\\
-\vspace{0.5cm}
+\vspace{0.2cm}
 \Large Big Data --- Bachelor's Degree in Data Science and Engineering (ULPGC)}
 
 \author{\textbf{Aythami Lorenzo} \\[0.1cm]
@@ -38,8 +38,7 @@ of physical cores, and we find that beyond that point extra threads return
 diminishing or no additional benefit for this kernel.
 \end{abstract}
 
-\newpage
-\tableofcontents
+{\small\tableofcontents}
 \newpage
 
 \section{Introduction and objective}
@@ -154,18 +153,16 @@ at fixed $p$ the speedup generally grows with $n$. The best measured
 speedup is 3.54$\times$ at $n = 2000$, $p = 8$; no configuration reaches
 the ideal $S(p) = p$ line (Figure~\ref{fig:speedup}).
 
-\FloatBarrier
-\begin{figure}[htbp]
+\begin{figure}[ht]
 \centering
-\includegraphics[width=0.85\linewidth]{figures/timing_vs_threads.png}
+\includegraphics[width=0.78\linewidth]{figures/timing_vs_threads.png}
 \caption{Kernel time per multiplication versus thread count, per size.}
 \label{fig:timing}
 \end{figure}
 
-\FloatBarrier
-\begin{figure}[htbp]
+\begin{figure}[ht]
 \centering
-\includegraphics[width=0.85\linewidth]{figures/speedup_efficiency.png}
+\includegraphics[width=0.78\linewidth]{figures/speedup_efficiency.png}
 \caption{Speedup $S(p) = T_{\mathrm{seq}}/T_p$ (left) and efficiency
 $E(p) = S(p)/p$ (right) versus thread count, per size, against the ideal
 lines.}
@@ -180,16 +177,14 @@ Efficiency is near-ideal at $p = 2$ (0.85--0.95), moderate at $p = 4$
 overhead (broadcast, collect, Spark scheduler) is visible at small sizes
 but becomes negligible at $n = 2000$.
 
-\FloatBarrier
-\begin{figure}[htbp]
+\begin{figure}[ht]
 \centering
-\includegraphics[width=0.85\linewidth]{figures/overhead_analysis.png}
+\includegraphics[width=0.78\linewidth]{figures/overhead_analysis.png}
 \caption{Distributed execution overhead: relative difference between
 measured time and ideal linear scaling, per size and thread count.}
 \label{fig:overhead}
 \end{figure}
 
-\clearpage
 \section{Discussion}
 \label{sec:discussion}
 
@@ -289,7 +284,6 @@ undertaken; and the largest tested size ($n = 2000$) is far below the
 point where matrices exceed one machine's memory and true distributed
 execution becomes necessary.
 
-\clearpage
 \section{References}
 
 \begin{thebibliography}{9}
@@ -326,6 +320,7 @@ script plus figure PNGs. They are attached as
 \texttt{Assignment04\_Lorenzo\_Materials.zip} to the \texttt{assignment-04}
 release of the course repository. From the project root, inside WSL2:
 
+{\footnotesize
 \begin{verbatim}
 .venv/bin/python python/consolidate_results.py
 mvn -q verify
@@ -335,6 +330,7 @@ mvn -q -DskipTests package
 .venv/bin/python python/run_experiments.py   # campaign
 .venv/bin/python python/plot_results.py      # figures
 \end{verbatim}
+}
 
 Exact toolchain versions and the full protocol are documented in
 \texttt{README.md}. Runner exit codes: 0 (ok), 2 (invalid arguments), 3
