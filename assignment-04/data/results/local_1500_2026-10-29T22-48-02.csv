@@ -1,0 +1,6 @@
+size,threads,total_ms,compute_ms,overhead_ms,checksum_match
+1500,1,2645,2645,0,true
+1500,2,1531,1531,0,true
+1500,4,1440,1440,0,true
+1500,8,906,906,0,true
+1500,12,1039,1039,0,true

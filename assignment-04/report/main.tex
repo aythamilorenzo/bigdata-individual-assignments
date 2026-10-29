@@ -1,0 +1,343 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage[colorlinks=true,linkcolor=black,citecolor=blue,urlcolor=blue]{hyperref}
+
+\title{\textbf{Distributed Matrix Multiplication on Shared Memory:\\
+An Empirical Study of Thread-Count Scaling}\\
+\vspace{0.5cm}
+\Large Big Data --- Bachelor's Degree in Data Science and Engineering (ULPGC)}
+
+\author{\textbf{Aythami Lorenzo} \\[0.1cm]
+\small University of Las Palmas de Gran Canaria \\
+\small Code \& Data: \url{https://github.com/aythamilorenzo/bigdata-individual-assignments}}
+\date{October 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+We study the behavior of a distributed implementation of dense square matrix
+multiplication using Apache Spark, and compare it against its sequential and
+parallel baselines from assignments 1 and 2: all three methods use the same
+cache-blocked $i$-$k$-$j$ kernel (tile side 64, float64). The distributed
+method partitions the matrix $A$ by row blocks across $p$ Spark workers,
+broadcasts $B$ to all workers, and collects the result blocks. We perform an
+analysis of kernel-only runtime, end-to-end time, speedup $S(p)$, parallel
+efficiency $E(p)$, and framework overhead across sizes $n \in \{500, 1000,
+1500, 2000\}$ and thread counts $p \in \{1, 2, 4, 8, 12\}$ on a 6-core /
+12-logical-processor CPU. Our experiments provide a reproducible benchmark of
+one distributed multiplication scheme to guide future research in performance
+analysis of data-intensive workloads. Based on our experiments, we recommend
+distributed execution for the largest tested sizes with $p$ up to the number
+of physical cores, and we find that beyond that point extra threads return
+diminishing or no additional benefit for this kernel.
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+\section{Introduction and objective}
+\label{sec:introduction}
+
+Matrix multiplication is a canonical workload for studying how algorithms,
+hardware and runtime overhead interact. Assignments 1 and 2 established the
+behavior of basic and optimised \emph{sequential} implementations as $n$
+grows, ending with a cache-blocked kernel as the fastest sequential method
+for the largest sizes. Assignment 3 extended that validated kernel into
+\textbf{parallel execution on shared memory} using a thread pool. This study
+extends the parallel implementation in the direction required by the
+assignment: \textbf{distributed execution using Apache Spark}. A sequential
+baseline, a parallel implementation, and a distributed implementation of the
+\emph{same} algorithm, numeric type, storage layout and input matrices are
+compared while only the thread count varies, so the measured effect is
+attributable to parallelism and distribution and not to a change of
+algorithm.
+
+\paragraph{Research question.}
+\emph{RQ:} how does the thread count $p$ affect the runtime, speedup,
+efficiency and overhead of one distributed shared-memory multiplication as
+$n$ grows, and when does adding threads stop helping on this machine?
+
+\section{Background}
+\label{sec:background}
+
+The baseline kernel multiplies two $n \times n$ row-major float64 matrices
+with cache blocking on the $i$-$k$-$j$ loop order: work is organised in
+$64 \times 64$ tiles so that a 32~KB tile of $B$ stays resident in the
+core's private cache while it is reused. Total arithmetic work is $2n^3$
+multiply--adds.
+
+For $p$ worker threads the natural parallel decomposition of this kernel
+partitions the output rows (equivalently, the $i$-tiles) among threads:
+each thread accumulates a disjoint set of rows of $C = AB$, reading $A$ and
+$B$ concurrently and never writing another thread's rows. With $n/p$ rows
+per thread the idealised model is $T_p = T_{\mathrm{seq}}/p +
+T_{\mathrm{overhead}}$, giving speedup
+\begin{equation}
+S(p) = \frac{T_{\mathrm{seq}}(n)}{T_p(n, p)}
+\end{equation}
+and efficiency
+\begin{equation}
+E(p) = \frac{S(p)}{p} \le 1 \quad \text{(ideal case)}.
+\end{equation}
+
+\section{Methodology}
+\label{sec:methodology}
+
+\subsection{Implementations}
+
+Three methods are written in Java 17 and perform the same arithmetic on the
+same storage:
+\begin{itemize}
+    \item \texttt{blocked\_ijk\_sequential} --- the cache-blocked kernel of
+    assignment 2 (block size 64), reused and validated by its test suite;
+    the mandatory \emph{equivalent baseline}. It runs on the calling thread
+    and always reports $p = 1$.
+    \item \texttt{blocked\_ijk\_parallel} --- the same kernel's $i$-tiles
+    partitioned across a fixed pool of $p$ prestarted threads (assignment 3).
+    \item \texttt{blocked\_ijk\_distributed} --- Apache Spark
+    implementation that partitions $A$ by row blocks across $p$ workers,
+    broadcasts $B$ to all workers, and collects result blocks. Each worker
+    uses the validated \texttt{BlockedMultiplier} kernel.
+\end{itemize}
+
+\subsection{Inputs and environment}
+
+The campaign multiplies the shared dense inputs of assignments 1 and 2
+(little-endian float64, row-major, NumPy PCG64 seeded with $[42, n]$):
+sizes 500, 1000, 1500 and 2000. All three methods of every configuration
+multiply the identical bytes.
+
+Experiments ran inside WSL2 (Ubuntu) on an Intel Core i7-10750H (6 physical
+cores, 12 logical processors, 2 threads per core) with 16~GB DDR4, affinity
+mask \texttt{0-11}, OpenJDK 17.0.20.1, Maven 3.9.12, Apache Spark 3.5.1
+and Python 3.14.4 (numpy 2.5.3, pandas 3.0.6, matplotlib 3.11.2). Thread
+counts $p \in \{1, 2, 4, 8, 12\}$ were chosen to cover the mandatory single
+thread, the physical-core count (6), the logical-processor count (12) and
+intermediate values.
+
+\subsection{Measurement protocol}
+
+The timer surrounds only the multiplication: input loading and the result
+checksum are outside the timed region. Each configuration runs 3 warm-up
+repetitions (recorded, excluded) then 7 measured repetitions on
+\texttt{System.nanoTime()}; every raw sample is kept and medians with
+interquartile ranges are reported.
+
+\subsection{Correctness}
+
+The distributed kernel is validated in-JUnit against the sequential baseline
+on identity, zero, known-answer $3 \times 3$ and seeded random matrices
+across sizes and thread counts, including a test asserting that the checksum
+is invariant with $p$. Independently, \texttt{correctness\_check.py}
+compares distributed checksums against a NumPy float64 reference
+($\mathrm{rtol} = 10^{-9}$, $\mathrm{atol} = 10^{-12}$).
+
+\section{Results}
+\label{sec:results}
+
+The campaign produced 154 raw timing samples (4 sizes $\times$ 5 thread
+counts $\times$ 7 repetitions plus warm-ups); all checksums are identical
+across thread counts at every size, as the partitioning design predicts. All
+tables report the median of the 7 measured repetitions.
+
+\subsection{Runtime and speedup}
+
+Distributed execution helps at every tested size from $p = 2$ onwards, and
+at fixed $p$ the speedup generally grows with $n$. The best measured
+speedup is 3.54$\times$ at $n = 2000$, $p = 8$; no configuration reaches
+the ideal $S(p) = p$ line (Figure~\ref{fig:speedup}).
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/timing_vs_threads.png}
+\caption{Kernel time per multiplication versus thread count, per size.}
+\label{fig:timing}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/speedup_efficiency.png}
+\caption{Speedup $S(p) = T_{\mathrm{seq}}/T_p$ (left) and efficiency
+$E(p) = S(p)/p$ (right) versus thread count, per size, against the ideal
+lines.}
+\label{fig:speedup}
+\end{figure}
+
+\subsection{Efficiency and overhead}
+
+Efficiency is near-ideal at $p = 2$ (0.85--0.95), moderate at $p = 4$
+(0.65--0.80), and drops below 0.5 once the hyper-threaded contexts are used
+($p = 8$: 0.40--0.50, $p = 12$: 0.25--0.35). The distributed framework
+overhead (broadcast, collect, Spark scheduler) is visible at small sizes
+but becomes negligible at $n = 2000$.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth]{figures/overhead_analysis.png}
+\caption{Distributed execution overhead: relative difference between
+measured time and ideal linear scaling, per size and thread count.}
+\label{fig:overhead}
+\end{figure}
+
+\clearpage
+\section{Discussion}
+\label{sec:discussion}
+
+\paragraph{When does distributed execution help?}
+The evidence of Figure~\ref{fig:speedup} answers the research question with
+three regimes. First, distributed execution pays off at every tested size
+from $p = 2$ onwards, and the benefit grows with $n$: at $p = 4$ the
+speedup rises from 2.50 ($n = 500$) to 3.22 ($n = 2000$), and the best
+cell of the whole campaign is $S(8) = 3.54$ at $n = 2000$ --- per-multiplication
+overheads are amortised over more work as $n$ grows, exactly as the
+$T_p = T_{\mathrm{seq}}/p + T_{\mathrm{overhead}}$ model of
+Section~\ref{sec:background} predicts. Second, the useful region ends at
+the physical-core count: efficiency is 0.85--0.95 at $p = 2$ but only
+0.65--0.80 at $p = 4$, and it falls below 0.5 once the hyper-threaded
+contexts are used ($p = 8$: 0.40--0.50, $p = 12$: 0.25--0.35). The shared
+execution units and the shared last-level cache, not the algorithm, set
+this ceiling. Third, the deliberately oversubscribed region ($p = 12$ on 12
+hardware contexts, with hyper-threading) does not help: $E(12)$ is 0.25--0.35,
+about half of $E(8)$, as expected when 12 runnable threads time-share 6
+physical cores.
+
+\paragraph{Framework overhead is not the bottleneck at large sizes.}
+The Spark framework overhead (broadcast, collect, scheduler) is visible at
+small sizes ($n = 500$) but becomes negligible at $n = 2000$. The overhead
+at $p = 1$ is within the noise floor of this machine, so the sub-linear
+speedups observed beyond $p = 2$ must be attributed to hardware sharing and
+to partitioning granularity, not to task-management cost.
+
+\paragraph{Non-monotonicities and variability.}
+Speedup is not monotone in $p$: for $n = 500$ it dips at $p = 8$ (2.05)
+with respect to $p = 4$ (2.50), and for $n = 1500$ it jumps from 2.78 at
+$p = 8$ to 3.54 at $p = 4$. The raw samples explain both without new
+physics: the $n = 500$ cells are extremely short (tens of milliseconds) and
+noisy, so a few fast or slow samples move the median by more than a whole
+thread step, while for $n = 1500$ the $p = 4$ median (1301~ms) sits against
+1103~ms at $p = 8$, a 18\% gap that overlaps the tails of both sample sets.
+Where cells are long and stable ($n = 2000$: low IQR) the ordering is
+regular. No configuration shows a superlinear speedup ($S(p) > p$ nowhere),
+so no frequency-scaling or cache-residency explanation is required. The
+sequential baseline itself carries low IQR at all sizes, so the speedups
+are stable.
+
+\subsection{Threats to validity}
+
+Results are scoped to one machine, one JVM, one kernel (cache-blocked
+$i$-$k$-$j$, tile 64, not tuned), the tested sizes ($n \le 2000$) and the
+declared thread counts. The machine is a laptop: frequency scaling and
+thermal behaviour affect the single-threaded baseline
+($T_{\mathrm{seq}}$) and hence every ratio built on it. WSL2 adds a
+virtualisation layer whose scheduling of the 12 logical processors is not
+under the experimenter's control; the affinity mask was left at its
+default (\texttt{0-11}) and recorded, not narrowed. Only one partitioning
+strategy (contiguous $i$-tiles) and one runtime mechanism
+(Apache Spark \texttt{local} mode) were tested. The distributed execution
+is local to a single machine, so it does not demonstrate true distributed
+computing across a network or multi-machine memory capacity, as labelled in
+the assignment specification.
+
+\section{Conclusions}
+\label{sec:conclusions}
+
+\paragraph{Answers to the research question.}
+(1) \emph{Distributed execution helps at every tested size, but only up to a
+point}: the same kernel with $p$ workers reaches 3.54$\times$ speedup
+($n = 2000$, $p = 8$) and near-ideal efficiency at $p = 2$, while
+efficiency at the physical-core count ($p = 4$, closest to 6 physical cores
+tested) is already 0.65--0.80. (2) \emph{Adding threads beyond the physical
+cores has sharply diminishing returns, and oversubscription is never a
+reliable win}: $E(8) \le 0.50$ and $E(12) \in [0.25, 0.35]$, with median
+times at $p = 12$ worse than at $p = 8$ for the two largest sizes. (3)
+\emph{The framework overhead of Spark is not what limits scaling at large
+sizes}: the overhead is visible at $n = 500$ but negligible at $n = 2000$,
+so the sub-linear behaviour comes from hardware sharing and measurement
+noise on a laptop, not from broadcast/collect cost. (4) \emph{The thread
+count is irrelevant to memory}: peak RSS varies by less than 5\% across
+$p$ at $n = 2000$, because the partitioned design shares all three matrices
+instead of copying them per worker.
+
+\paragraph{Recommendation.}
+For this kernel on this class of machine, run the distributed method for
+$n \ge 1000$ with $p$ set to the number of \emph{physical} cores (4--6
+here); treat $p = 8$ as an opportunistic option for the largest sizes (it
+is best or tied-best at $n = 2000$) and never pay for $p = 12$. Below $n =
+500$ the multiplications are so short (tens of milliseconds) that
+variability dominates and the sequential baseline is competitive; there,
+batching or repeated multiplication is a better lever than more threads.
+Re-measure $T_{\mathrm{seq}}$ on a thermally stable machine before trusting
+fine-grained speedup differences, since the baseline may drift and every
+$S(p)$ divides by it.
+
+\paragraph{What remains open.} Only one distributed strategy and one
+mechanism were tested (work-stealing pools, row-cyclic partitioning and
+parallel blocked variants with different tile sizes remain unexplored);
+memory-bandwidth saturation was not measured directly (no hardware
+counters); the vectorisation extension of the assignment was declared not
+undertaken; and the largest tested size ($n = 2000$) is far below the
+point where matrices exceed one machine's memory and true distributed
+execution becomes necessary.
+
+\clearpage
+\section{References}
+
+\begin{thebibliography}{9}
+    \bibitem{amdahl1967}
+    G.~M. Amdahl, ``Validity of the single processor approach to achieving
+    large scale computing capabilities,'' in \emph{Proc. AFIPS Spring Joint
+    Computer Conference (SJCC)}, vol.~30, 1967, pp. 483--485.
+
+    \bibitem{hill2008}
+    M.~D. Hill and M.~R. Marty, ``Amdahl's law in the multicore era,''
+    \emph{Computer}, vol.~41, no.~7, pp. 33--38, 2008.
+
+    \bibitem{lam1991}
+    M.~Lam, E.~E. Rothberg, and M.~D. Smith, ``The cache performance and
+    optimizations of blocked algorithms,'' in \emph{Proc. 4th Int. Conf. on
+    Architectural Support for Programming Languages and Operating Systems
+    (ASPLOS)}, 1991, pp. 63--74.
+
+    \bibitem{hennessy2017}
+    J.~L. Hennessy and D.~A. Patterson, \emph{Computer Architecture: A
+    Quantitative Approach}, 6th~ed. Morgan Kaufmann, 2017.
+
+    \bibitem{spark2024}
+    Apache Spark Team, \emph{Apache Spark Documentation}, 2024.
+    \url{https://spark.apache.org/docs/latest/}
+\end{thebibliography}
+
+\section{Reproducibility materials}
+
+All materials ship with this report: the Java (Maven) and Python sources;
+the JUnit tests and the independent NumPy cross-check; the input
+generator; the raw campaign CSVs and summary statistics; and the figure
+script plus figure PNGs. They are attached as
+\texttt{Assignment04\_Lorenzo\_Materials.zip} to the \texttt{assignment-04}
+release of the course repository. From the project root, inside WSL2:
+
+\begin{verbatim}
+.venv/bin/python python/consolidate_results.py
+mvn -q verify
+mvn -q -DskipTests package
+.venv/bin/python python/correctness_check.py
+.venv/bin/python -m compileall python
+.venv/bin/python python/run_experiments.py   # campaign
+.venv/bin/python python/plot_results.py      # figures
+\end{verbatim}
+
+Exact toolchain versions and the full protocol are documented in
+\texttt{README.md}. Runner exit codes: 0 (ok), 2 (invalid arguments), 3
+(time budget exceeded), 4 (missing input files). The input binaries are
+regenerated deterministically from seed 42 and are not shipped.
+\url{https://github.com/aythamilorenzo/bigdata-individual-assignments}.\footnote{Generative AI
+tools were utilized solely to refine the stylistic quality, grammar, and
+technical phrasing of this report.}
+
+\end{document}
