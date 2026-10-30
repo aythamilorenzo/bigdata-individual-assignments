@@ -1,25 +1,35 @@
 #!/usr/bin/env python3
-"""
-Campaign orchestrator for Assignment 4 - Distributed Matrix Multiplication.
+"""Campaign orchestrator for Assignment 4 — distributed matrix multiplication.
 
-Executes benchmarks with different thread counts and matrix sizes,
-collects results, and generates CSV outputs for analysis.
+Runs one JVM per (method, threads, size) configuration so that the peak-RSS
+and peak-heap measurements of each configuration are not polluted by the
+others. The three method families share the same validated kernel:
+
+- blocked_ijk_sequential  (threads = 1)
+- blocked_ijk_parallel    (thread pool, assignment 3)
+- blocked_ijk_distributed (Spark local[P], assignment 4)
+
+Raw rows are appended to data/results/distributed_time_raw.csv and
+data/results/memory_raw.csv.
 """
+
+from __future__ import annotations
 
 import subprocess
 import sys
-import os
-from pathlib import Path
 from datetime import datetime
-import json
+from pathlib import Path
 
-# Configuration
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 JAVA_CMD = "java"
-JAR_PATH = Path(__file__).parent.parent / "target" / "matrixmul-distributed.jar"
-RESULTS_DIR = Path(__file__).parent.parent / "data" / "results"
-INPUTS_DIR = Path(__file__).parent.parent / "data" / "inputs"
+JAR_PATH = PROJECT_ROOT / "target" / "matrixmul-distributed.jar"
+INPUTS_DIR = PROJECT_ROOT / "data" / "inputs"
+RESULTS_DIR = PROJECT_ROOT / "data" / "results"
+TIME_CSV = RESULTS_DIR / "distributed_time_raw.csv"
+MEMORY_CSV = RESULTS_DIR / "memory_raw.csv"
+LOG_PATH = RESULTS_DIR / "run_log.txt"
 
-# JVM arguments required for Spark
+# Spark on Java 17 needs these module opens on every JVM.
 JVM_ARGS = [
     "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
     "--add-opens=java.base/java.lang=ALL-UNNAMED",
@@ -36,125 +46,64 @@ JVM_ARGS = [
     "--add-opens=java.base/sun.util.calendar=ALL-UNNAMED",
 ]
 
-# Experiment configurations
-MATRIX_SIZES = [500, 1000, 1500, 2000]
-THREAD_COUNTS = [1, 2, 4, 8, 12]
+SIZES = (500, 1000, 1500, 2000, 3000, 4000)
+THREAD_COUNTS = (1, 2, 4, 6, 8, 12, 24)
+WARMUP = 3
+REPETITIONS = 7
 
-def run_benchmark(matrix_size: int, thread_count: int, timestamp: str) -> dict:
-    """Run a single benchmark configuration."""
-    print(f"\n{'='*60}")
-    print(f"Running: n={matrix_size}, threads={thread_count}")
-    print(f"{'='*60}")
-    
-    output_file = RESULTS_DIR / f"local_{matrix_size}_{timestamp}.csv"
-    
-    cmd = [JAVA_CMD] + JVM_ARGS + [
-        "-cp", str(JAR_PATH),
-        "es.ulpgc.bigdata.matrixmul.distributed.LocalRunner",
-        str(matrix_size),
-        str(RESULTS_DIR),
-        str(thread_count)
-    ]
-    
-    try:
-        result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            timeout=300  # 5 minutes timeout
-        )
-        
-        if result.returncode != 0:
-            print(f"ERROR: Benchmark failed with return code {result.returncode}")
-            print(f"STDERR: {result.stderr}")
-            return None
-        
-        # Parse output to extract metrics
-        output_lines = result.stdout.split('\n')
-        metrics = {
-            'matrix_size': matrix_size,
-            'threads': thread_count,
-            'timestamp': timestamp,
-            'output_file': str(output_file),
-        }
-        
-        # Extract time and checksum from output
-        for line in output_lines:
-            if 'Total time:' in line:
-                time_ms = int(line.split(':')[1].strip().replace('ms', '').strip())
-                metrics['time_ms'] = time_ms
-            if 'Checksum match:' in line:
-                checksum_match = 'true' in line.lower()
-                metrics['checksum_match'] = checksum_match
-        
-        print(f"✓ Completed in {metrics.get('time_ms', 'N/A')} ms")
-        return metrics
-        
-    except subprocess.TimeoutExpired:
-        print(f"ERROR: Benchmark timed out after 300 seconds")
-        return None
-    except Exception as e:
-        print(f"ERROR: Exception during benchmark: {e}")
-        return None
 
-def run_campaign():
-    """Run the complete benchmark campaign."""
-    timestamp = datetime.now().strftime("%Y-%m-%dT%H-%M-%S")
-    
-    print("="*60)
-    print("Assignment 4 - Distributed Matrix Multiplication Campaign")
-    print("="*60)
-    print(f"Timestamp: {timestamp}")
-    print(f"Matrix sizes: {MATRIX_SIZES}")
-    print(f"Thread counts: {THREAD_COUNTS}")
-    print(f"Results directory: {RESULTS_DIR}")
-    
-    # Ensure results directory exists
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    
-    # Check that JAR exists
-    if not JAR_PATH.exists():
-        print(f"\nERROR: JAR file not found at {JAR_PATH}")
-        print("Please run 'mvn package' first.")
-        sys.exit(1)
-    
-    # Run all configurations
-    all_results = []
-    total_configs = len(MATRIX_SIZES) * len(THREAD_COUNTS)
-    current = 0
-    
-    for size in MATRIX_SIZES:
+def log(message: str) -> None:
+    stamp = datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
+    line = f"[{stamp}] {message}"
+    print(line, flush=True)
+    with LOG_PATH.open("a", encoding="utf-8") as handle:
+        handle.write(line + "\n")
+
+
+def run_configuration(method: str, threads: int, size: int) -> bool:
+    command = [JAVA_CMD, *JVM_ARGS, "-Xmx3g", "-jar", str(JAR_PATH),
+               "--method", method,
+               "--threads", str(threads),
+               "--inputs", str(INPUTS_DIR),
+               "--size", str(size),
+               "--time-csv", str(TIME_CSV),
+               "--memory-csv", str(MEMORY_CSV),
+               "--warmup", str(WARMUP),
+               "--repetitions", str(REPETITIONS)]
+    log(f"$ {' '.join(command)}")
+    result = subprocess.run(command, capture_output=True, text=True, timeout=3600)
+    for line in result.stdout.splitlines():
+        log(f"  {line}")
+    if result.returncode != 0:
+        for line in result.stderr.splitlines()[-5:]:
+            log(f"  ! {line}")
+        log(f"  exit {result.returncode} (3 = budget exceeded, a result not a failure)")
+    return result.returncode in (0, 3)
+
+
+def main() -> int:
+    if not JAR_PATH.is_file():
+        print(f"missing jar: {JAR_PATH}; run 'mvn -q -DskipTests package' first")
+        return 1
+
+    log("=== Assignment 4 campaign: sequential vs thread-pool vs Spark ===")
+    log(f"sizes={SIZES} threads={THREAD_COUNTS} warmup={WARMUP} repetitions={REPETITIONS}")
+
+    failures = 0
+    total = 0
+    for size in SIZES:
+        total += 1
+        ok = run_configuration("blocked_ijk_sequential", 1, size)
+        failures += 0 if ok else 1
         for threads in THREAD_COUNTS:
-            current += 1
-            print(f"\n[{current}/{total_configs}] Configuration {current} of {total_configs}")
-            
-            result = run_benchmark(size, threads, timestamp)
-            if result:
-                all_results.append(result)
-    
-    # Summary
-    print("\n" + "="*60)
-    print("Campaign Summary")
-    print("="*60)
-    print(f"Total configurations: {total_configs}")
-    print(f"Successful: {len(all_results)}")
-    print(f"Failed: {total_configs - len(all_results)}")
-    
-    if all_results:
-        # Save summary to JSON
-        summary_file = RESULTS_DIR / f"campaign_summary_{timestamp}.json"
-        with open(summary_file, 'w') as f:
-            json.dump({
-                'timestamp': timestamp,
-                'configurations': all_results,
-                'matrix_sizes': MATRIX_SIZES,
-                'thread_counts': THREAD_COUNTS,
-            }, f, indent=2)
-        print(f"\nSummary saved to: {summary_file}")
-    
-    return all_results
+            for method in ("blocked_ijk_parallel", "blocked_ijk_distributed"):
+                total += 1
+                ok = run_configuration(method, threads, size)
+                failures += 0 if ok else 1
+
+    log(f"=== campaign finished: {total} configurations, {failures} failures ===")
+    return 0 if failures == 0 else 1
+
 
 if __name__ == "__main__":
-    results = run_campaign()
-    if not results:
-        sys.exit(1)
+    sys.exit(main())

@@ -1,21 +1,26 @@
 #!/usr/bin/env python3
-"""
-Correctness verification for Assignment 4 - Distributed Matrix Multiplication.
+"""Correctness cross-check for Assignment 4.
 
-Compares distributed implementation against sequential baseline to verify
-bit-identical results (or within acceptable floating-point tolerance).
+Runs the compiled jar with every method family (sequential, thread pool,
+Spark distributed) on the 5x5 reference pair and the shared campaign inputs,
+and compares the printed checksums against a NumPy float64 reference
+(rtol=1e-9, atol=1e-12). Also asserts that the checksum is invariant with
+the thread count — evidence of safe partitioned access to the shared output.
 """
+
+from __future__ import annotations
 
 import subprocess
 import sys
 from pathlib import Path
+
 import numpy as np
 
-JAVA_CMD = "java"
-JAR_PATH = Path(__file__).parent.parent / "target" / "matrixmul-distributed.jar"
-RESULTS_DIR = Path(__file__).parent.parent / "data" / "results"
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+JAR_PATH = PROJECT_ROOT / "target" / "matrixmul-distributed.jar"
+INPUTS_DIR = PROJECT_ROOT / "data" / "inputs"
+REFERENCE_DIR = PROJECT_ROOT / "data" / "reference"
 
-# JVM arguments required for Spark
 JVM_ARGS = [
     "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED",
     "--add-opens=java.base/java.lang=ALL-UNNAMED",
@@ -32,115 +37,81 @@ JVM_ARGS = [
     "--add-opens=java.base/sun.util.calendar=ALL-UNNAMED",
 ]
 
-# Test configurations
-TEST_SIZES = [100, 200, 500]
-THREAD_COUNTS = [1, 2, 4, 8]
+RTOL = 1e-9
+ATOL = 1e-12
 
-def run_correctness_test(matrix_size: int, threads: int) -> dict:
-    """Run a correctness test and verify checksum match."""
-    print(f"\nTesting: n={matrix_size}, threads={threads}")
-    
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    output_file = RESULTS_DIR / f"correctness_{matrix_size}_{threads}.csv"
-    
-    cmd = [JAVA_CMD] + JVM_ARGS + [
-        "-cp", str(JAR_PATH),
-        "es.ulpgc.bigdata.matrixmul.distributed.LocalRunner",
-        str(matrix_size),
-        str(RESULTS_DIR),
-        str(threads)
-    ]
-    
-    try:
-        result = subprocess.run(
-            cmd,
-            capture_output=True,
-            text=True,
-            timeout=120
-        )
-        
-        if result.returncode != 0:
-            print(f"  ✗ Execution failed with return code {result.returncode}")
-            print(f"    STDERR: {result.stderr[:200]}")
-            return None
-        
-        # Parse output
-        output_lines = result.stdout.split('\n')
-        metrics = {
-            'matrix_size': matrix_size,
-            'threads': threads,
-            'checksum_match': False,
-            'time_ms': 0,
-        }
-        
-        for line in output_lines:
-            if 'Total time:' in line:
-                time_str = line.split(':')[1].strip().replace('ms', '').strip()
-                metrics['time_ms'] = int(time_str)
-            if 'Checksum match:' in line:
-                metrics['checksum_match'] = 'true' in line.lower()
-            if 'Sequential checksum:' in line:
-                seq_checksum = float(line.split(':')[1].strip())
-                metrics['seq_checksum'] = seq_checksum
-            if 'Distributed checksum:' in line:
-                dist_checksum = float(line.split(':')[1].strip())
-                metrics['dist_checksum'] = dist_checksum
-        
-        status = "✓" if metrics['checksum_match'] else "✗"
-        print(f"  {status} Time: {metrics['time_ms']} ms, Checksum match: {metrics['checksum_match']}")
-        
-        return metrics
-        
-    except subprocess.TimeoutExpired:
-        print(f"  ✗ Test timed out")
-        return None
-    except Exception as e:
-        print(f"  ✗ Exception: {e}")
-        return None
 
-def main():
-    """Run all correctness tests."""
-    print("="*60)
-    print("Assignment 4 - Correctness Verification")
-    print("="*60)
-    
-    if not JAR_PATH.exists():
-        print(f"\nERROR: JAR file not found at {JAR_PATH}")
-        print("Please run 'mvn package' first.")
-        sys.exit(1)
-    
-    all_results = []
-    total_tests = len(TEST_SIZES) * len(THREAD_COUNTS)
-    current = 0
-    
-    for size in TEST_SIZES:
-        for threads in THREAD_COUNTS:
-            current += 1
-            print(f"\n[{current}/{total_tests}] Test {current} of {total_tests}")
-            
-            result = run_correctness_test(size, threads)
-            if result:
-                all_results.append(result)
-    
-    # Summary
-    print("\n" + "="*60)
-    print("Correctness Test Summary")
-    print("="*60)
-    
-    total = len(all_results)
-    passed = sum(1 for r in all_results if r['checksum_match'])
-    failed = total - passed
-    
-    print(f"Total tests: {total}")
-    print(f"Passed: {passed}")
-    print(f"Failed: {failed}")
-    
-    if failed > 0:
-        print("\n⚠ Some tests failed! Check checksum mismatches above.")
-        sys.exit(1)
+def load_matrix(path: Path, size: int) -> np.ndarray:
+    return np.fromfile(path, dtype="<f8").reshape(size, size)
+
+
+def run_jar_checksum(method: str, threads: int, inputs: Path, size: int) -> float:
+    command = ["java", *JVM_ARGS, "-Xmx3g", "-jar", str(JAR_PATH),
+               "--method", method, "--threads", str(threads),
+               "--inputs", str(inputs), "--size", str(size),
+               "--time-csv", "/tmp/correctness_time.csv",
+               "--memory-csv", "/tmp/correctness_mem.csv",
+               "--warmup", "0", "--repetitions", "1"]
+    result = subprocess.run(command, capture_output=True, text=True, timeout=1200)
+    if result.returncode != 0:
+        raise RuntimeError(f"jar failed ({result.returncode}): {result.stderr[-300:]}")
+    for line in result.stdout.splitlines():
+        if "checksum=" in line:
+            return float(line.split("checksum=")[1].split()[0])
+    raise RuntimeError("checksum not found in output")
+
+
+def check_case(label: str, inputs: Path, size: int,
+               methods_threads: list[tuple[str, int]]) -> bool:
+    print(f"\n{label}")
+    a = load_matrix(inputs / f"matrixA_{size}.bin", size)
+    b = load_matrix(inputs / f"matrixB_{size}.bin", size)
+    reference = float(np.sum(a @ b))
+
+    ok = True
+    checksums = {}
+    for method, threads in methods_threads:
+        jar = run_jar_checksum(method, threads, inputs, size)
+        checksums[(method, threads)] = jar
+        close = np.isclose(jar, reference, rtol=RTOL, atol=ATOL)
+        status = "ok" if close else "FAIL"
+        print(f"  [{status:>4}] {method} p={threads}: jar={jar!r} numpy={reference!r}")
+        ok = ok and close
+
+    distinct = {round(v, 9) for v in checksums.values()}
+    if len(distinct) != 1:
+        print(f"  [FAIL] checksum varies across methods/threads: {distinct}")
+        ok = False
     else:
-        print("\n✓ All correctness tests passed!")
-        print("Distributed implementation produces identical results to sequential baseline.")
+        print("  [   ok] checksum invariant across all methods and thread counts")
+    return ok
+
+
+def main() -> int:
+    if not JAR_PATH.is_file():
+        print(f"missing jar: {JAR_PATH}")
+        return 1
+
+    cases = []
+    cases.append(check_case(
+        "reference n=5 (assignment 1 matrices)", REFERENCE_DIR, 5,
+        [("blocked_ijk_sequential", 1),
+         ("blocked_ijk_parallel", 2),
+         ("blocked_ijk_parallel", 8),
+         ("blocked_ijk_distributed", 2),
+         ("blocked_ijk_distributed", 8)]))
+    cases.append(check_case(
+        "campaign input n=500", INPUTS_DIR, 500,
+        [("blocked_ijk_sequential", 1),
+         ("blocked_ijk_parallel", 1),
+         ("blocked_ijk_parallel", 12),
+         ("blocked_ijk_distributed", 1),
+         ("blocked_ijk_distributed", 12)]))
+
+    passed = all(cases)
+    print(f"\n{'all checks passed' if passed else 'SOME CHECKS FAILED'}")
+    return 0 if passed else 1
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
