@@ -331,7 +331,7 @@ $E(p)$ Spark \textbackslash\ $p$ & 1 & 2 & 4 & 6 & 8 & 12 & 24 \\
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.82\linewidth]{figures/median_time_vs_threads.png}
+\includegraphics[width=0.72\linewidth]{figures/median_time_vs_threads.png}
 \caption{Median end-to-end time per multiplication versus thread count
 (log--log), per size; shaded bands are interquartile ranges.}
 \label{fig:time}
@@ -339,7 +339,7 @@ $E(p)$ Spark \textbackslash\ $p$ & 1 & 2 & 4 & 6 & 8 & 12 & 24 \\
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.82\linewidth]{figures/speedup_vs_threads.png}
+\includegraphics[width=0.72\linewidth]{figures/speedup_vs_threads.png}
 \caption{Speedup $S(p) = T_{\mathrm{seq}}/T_p$ versus thread count for the
 thread-pool and Spark methods, per size, against the ideal line
 $S(p) = p$.}
@@ -348,7 +348,7 @@ $S(p) = p$.}
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.82\linewidth]{figures/efficiency_vs_threads.png}
+\includegraphics[width=0.72\linewidth]{figures/efficiency_vs_threads.png}
 \caption{Parallel efficiency $E(p) = S(p)/p$ versus thread count, per size;
 the dashed line marks the ideal $E = 1$.}
 \label{fig:efficiency}
@@ -374,7 +374,7 @@ not with the number of workers.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.82\linewidth]{figures/framework_overhead.png}
+\includegraphics[width=0.72\linewidth]{figures/framework_overhead.png}
 \caption{Spark overhead relative to the thread-pool method:
 $T_{\mathrm{Spark}}(n,p)/T_{\mathrm{pool}}(n,p) - 1$, per size and thread
 count.}
@@ -402,7 +402,7 @@ concurrently inside the job stage.
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.82\linewidth]{figures/spark_phase_breakdown.png}
+\includegraphics[width=0.72\linewidth]{figures/spark_phase_breakdown.png}
 \caption{Phase decomposition of the Spark method's end-to-end time (medians,
 stacked): broadcast of $B$, the Spark job and the driver-side assembly.}
 \label{fig:breakdown}
@@ -426,13 +426,13 @@ thread pool).
 
 \begin{figure}[htbp]
 \centering
-\includegraphics[width=0.82\linewidth]{figures/peak_rss_vs_threads.png}
+\includegraphics[width=0.72\linewidth]{figures/peak_rss_vs_threads.png}
 \caption{Peak resident set size versus thread count, per size and method
 (one line per size and method; darker shades are larger sizes).}
 \label{fig:memory}
 \end{figure}
 
-\clearpage
+\FloatBarrier
 \section{Discussion}
 \label{sec:discussion}
 
@@ -548,7 +548,7 @@ different tile sizes remain unexplored; memory-bandwidth saturation was not
 measured directly (no hardware counters); and the vectorisation extension
 of the assignment was declared not undertaken.
 
-\clearpage
+
 \section{References}
 \swallownextsectionstar
 
@@ -577,7 +577,6 @@ of the assignment was declared not undertaken.
     \url{https://spark.apache.org/docs/latest/}
 \end{thebibliography}
 
-\newpage
 \section{Reproducibility materials}
 
 All materials ship with this report: the Java (Maven) and Python sources;
