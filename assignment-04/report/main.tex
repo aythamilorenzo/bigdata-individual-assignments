@@ -91,14 +91,15 @@ this machine?
 The baseline kernel multiplies two $n \times n$ row-major float64 matrices
 with cache blocking on the $i$-$k$-$j$ loop order: work is organised in
 $64 \times 64$ tiles so that a 32~KB tile of $B$ stays resident in the
-core's private cache while it is reused. Total arithmetic work is $2n^3$
-multiply--adds.
+core's private cache while it is reused~\cite{lam1991,hennessy2017}. Total
+arithmetic work is $2n^3$ multiply--adds.
 
 For $p$ workers the natural parallel decomposition partitions the output
 rows (equivalently, the $i$-tiles) among workers: each worker accumulates a
 disjoint set of rows of $C = AB$, reading $A$ and $B$ concurrently and never
 writing another worker's rows. With $n/p$ rows per worker the idealised
-model is $T_p = T_{\mathrm{seq}}/p + T_{\mathrm{overhead}}$, giving speedup
+model is $T_p = T_{\mathrm{seq}}/p + T_{\mathrm{overhead}}$
+\cite{amdahl1967,hill2008}, giving speedup
 \begin{equation}
 S(p) = \frac{T_{\mathrm{seq}}(n)}{T_p(n, p)}
 \end{equation}
@@ -108,9 +109,10 @@ E(p) = \frac{S(p)}{p} \le 1 \quad \text{(ideal case)}.
 \end{equation}
 The overhead term $T_{\mathrm{overhead}}$ is method-dependent: the
 thread-pool method pays task dispatch and join inside one address space,
-while the Spark method additionally pays context setup, serialization of
-the broadcast variable, per-task scheduling and result collection to the
-driver. Separating these costs is one of the goals of this study.
+while the Spark method additionally pays the SparkContext setup,
+serialization of the broadcast variable, per-task scheduling and result
+collection to the driver. Separating these costs is one of the goals of
+this study.
 
 \section{Methodology}
 \label{sec:methodology}
@@ -129,10 +131,11 @@ same storage:
     reused verbatim). Every output row has exactly one writer and the same
     ascending-$k$ accumulation order as the sequential kernel.
     \item \texttt{blocked\_ijk\_distributed} --- the same kernel's $i$-tiles
-    partitioned across $p$ Spark workers: $A$ is partitioned by contiguous
-    row blocks, $B$ is broadcast to all workers and the result blocks are
-    collected to the driver. The workers run the same tile loops, so the
-    result is element-wise identical to the other two methods.
+    partitioned across $p$ Spark workers~\cite{spark2024}: $A$ is
+    partitioned by contiguous row blocks, $B$ is broadcast to all workers
+    and the result blocks are collected to the driver. The workers run the
+    same tile loops, so the result is element-wise identical to the other
+    two methods.
 \end{itemize}
 
 \subsection{Workers, processes and machines}
@@ -247,9 +250,9 @@ physical-core count $p = 6$ and $0.46$--$0.48$ at $p = 12$, and collapses
 to $0.18$--$0.24$ under oversubscription ($p = 24$). Spark's efficiency is
 lower at every point ($E(p = 12) = 0.29$--$0.37$) because its overhead
 term grows with the number of tasks. Increasing $p$ from 12 to 24 yields
-no reliable gain for either method --- the $n = 2000$ thread-pool speedup
-actually \emph{drops} from $5.56$ to $4.72$ --- as expected when 24
-runnable threads time-share 12 hardware contexts.
+no reliable gain for either method --- the thread-pool speedup at
+$n = 2000$ actually \emph{drops} from $5.56$ to $4.72$ --- as expected
+when 24 runnable threads time-share 12 hardware contexts.
 
 \begin{table}[htbp]
 \centering
@@ -385,8 +388,8 @@ count.}
 
 Figure~\ref{fig:breakdown} splits the Spark end-to-end time into the
 broadcast of $B$, the job and the driver-side assembly. The broadcast
-grows quadratically with $n$ --- 11~ms at $n = 500$, 220~ms at $n = 4000$,
-matching the $8n^2$ bytes of $B$ --- but it is amortised by the
+grows quadratically with $n$ (11~ms at $n = 500$, 220~ms at $n = 4000$,
+matching the $8n^2$ bytes of $B$), but it is amortised by the
 computation: it is 12\% of the end-to-end time at $n = 500$, $p = 12$ and
 only 4\% at $n = 4000$, $p = 12$. The assembly of the final matrix is
 negligible at all sizes (at most 59~ms, below 1\% for $n \ge 1000$). The
@@ -545,8 +548,9 @@ distributed run below which the framework, not the arithmetic, dominates.
 row blocks) and one distributed runtime (Spark local mode) were tested;
 real multi-machine execution with network transfer, work-stealing pools and
 different tile sizes remain unexplored; memory-bandwidth saturation was not
-measured directly (no hardware counters); and the vectorisation extension
-of the assignment was declared not undertaken.
+measured directly (no hardware counters); and the optional extension of
+inputs larger than one machine's memory was not attempted, since it needs
+infrastructure beyond the single machine available.
 
 
 \section{References}
@@ -602,8 +606,8 @@ Exact toolchain versions and the full protocol are documented in
 \texttt{README.md}. Runner exit codes: 0 (ok), 2 (invalid arguments), 3
 (time budget exceeded), 4 (missing input files). The input binaries are
 regenerated deterministically from seed 42 and are not shipped.
-\url{https://github.com/aythamilorenzo/bigdata-individual-assignments}.\footnote{Generative AI
-tools were utilized solely to refine the stylistic quality, grammar, and
-technical phrasing of this report.}
+\url{https://github.com/aythamilorenzo/bigdata-individual-assignments}.\footnote{The
+generative AI tool MiMo (Xiaomi) was used to refactor the code and improve
+this report.}
 
 \end{document}
